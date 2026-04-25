@@ -1,0 +1,35 @@
+<div class="">
+
+            <h3>Lugares de Producción Registrados</h3>
+
+            <table class="tabla">
+
+            <thead>
+            <tr>
+            <th >Lugar de Produccion</th>
+            <th>Municipio</th>
+            <th>Área Sembrada</th>
+            <th>Producto</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr *ngFor="let predio of predios">
+
+            <td>{{predio.nombre}}</td>
+            <td>{{predio.municipio}}</td>
+            <td>{{predio.area_sembrada}}</td>
+            <td>
+                <span *ngIf="predio.producto === 'Zanahoria'">🥕</span>
+                <span *ngIf="predio.producto === 'Papa'">🥔</span>
+                <span *ngIf="predio.producto === 'Maiz'">🌽</span>
+                {{predio.producto}}</td>
+
+            </tr>
+
+            </tbody>
+
+            </table>
+
+        </div>

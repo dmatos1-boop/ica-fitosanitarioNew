@@ -1,0 +1,102 @@
+/* ── Botones específicos de inspecciones ── */
+.btn-reasignar {
+  background: #cfe2ff;
+  color: #084298;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-cancelar-ins {
+  background: #e2e3e5;
+  color: #41464b;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* ── Tarjeta de info en modo reasignación ── */
+.info-reasignacion {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-fila {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #eee;
+}
+
+.info-fila:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 120px;
+}
+
+/* El técnico actual se resalta para que se note quién se está reemplazando */
+.tecnico-actual {
+  color: #842029;
+  font-weight: 600;
+  text-decoration: line-through;
+}
+
+/* ── Badges de estado ── */
+.badge-solicitada {
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-programada {
+  background: #cfe2ff;
+  color: #084298;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-realizada {
+  background: #d1e7dd;
+  color: #0a3622;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-cancelada {
+  background: #f8d7da;
+  color: #842029;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Botón asignar técnico */
+.btn-aprobar {
+  background: #d1e7dd;
+  color: #0a3622;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}

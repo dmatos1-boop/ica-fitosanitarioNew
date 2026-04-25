@@ -1,0 +1,56 @@
+<div class="box-form">
+    <div class="formulario-card">
+
+        <h2>Solicitud de Registro de Predio</h2>
+
+            <form>
+
+
+                <h3>Dirección del predio</h3>
+
+                <label>Departamento</label>
+                <select>
+
+                <option value="">Seleccione un departamento</option>
+
+                <option *ngFor="let d of departamentos">
+                {{d}}
+                </option>
+
+                </select>
+
+                <label>Ciudad / Municipio</label>
+                    <input type="text" placeholder="Municipio">
+
+                <label>Vereda</label>
+                    <input type="text" placeholder="Vereda">
+
+                    <h3>Documentos requeridos</h3>
+
+                    <label>Escritura pública o título de propiedad</label>
+                    <input type="file">
+
+                    <label>Cédula de ciudadanía</label>
+                    <input type="file">
+
+                    <label>Comprobante de pago impuesto predial</label>
+                    <input type="file">
+
+                    <label>Certificado de tradición y libertad</label>
+                    <input type="file">
+
+                    <div class="form-botones">
+
+                        <button type="submit" class="btn-verde">
+                        Enviar solicitud
+                        </button>
+
+                        <button type="button" class="btn-cancelar" routerLink="/usuario/predio">
+                        Cancelar
+                        </button>
+
+                    </div>
+
+            </form>
+        </div>            
+</div>     

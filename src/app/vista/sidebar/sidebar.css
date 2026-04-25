@@ -1,0 +1,125 @@
+
+.etiqueta{/*cajon de la etiqueta que esta sobre las opciones la de gestion*/
+
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 2px;
+text-transform: uppercase; /*para que este en mayuscula en caso de que no */
+color: rgba(255,255,255,0.45);
+padding: 0 6px;
+margin-bottom: 5vh;
+
+}
+.etiqueta:first-child{/*para que ignore los parametros que le indica el cajon de side-menu*/
+    margin-top: 0;
+}
+
+.sidebar{/*estamos manejando el estilo del sidebar menu */
+
+width:250px;
+background-color: var(--verde-fondo);/*estilos globales*/
+color:white;
+display:flex;/*distribuimos todo el espacio con un flex*/
+flex-direction:column;
+justify-content:space-between;
+padding:10px;
+height: 100vh;/*para que tenga un maximo y no se desborde de la pantalla*/
+position: sticky;/*mantenerlo fijo*/
+top: 0;
+z-index: 1000;
+
+}
+
+.sidebar-header{
+/*es la parte de arriba del sidebar*/
+text-align:center;
+font-size:20px;
+font-weight:bold;
+
+}
+
+.sidebar-menu{
+/*cajon del medio del sidebar, donde ubicamos todas las opciones o menu  */
+display:flex;
+flex-direction:column;
+gap:4px;
+margin-top:20px;
+
+}
+
+.sidebar-menu button{
+    /*las opciones a elegir*/
+
+background: var(--verde-botones2);
+border:none;
+color:white;
+text-align: start;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+
+}
+
+.sidebar-menu button:hover{/*estilizado de los botones con animacion*/
+
+background:var(--verde-botones);
+transform:translateX(3px);
+
+}
+
+
+/* footer del sidebar*/
+
+.sidebar-footer{
+margin-bottom:20px;
+
+}
+.sidebar-separator{
+    border-bottom: 2px solid rgba(255,255,255,0.15);
+}
+.logout{
+/*hablamos del boton*/
+background:var(--verde-botones2);
+border:none;
+padding:12px;
+width:100%;
+border-radius:6px;
+color:white;
+cursor:pointer;
+transition: 0.2s;
+}
+
+.logout:hover{
+transform: scale(1.03);
+background:var(--verde-botones);
+
+}
+
+
+/*iconos del sidebar unicamente*/
+.icon{
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 0 auto;
+    
+}
+.icono-menu{
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+
+}
+
+.icono{
+    width: 30px;
+    height: 30px;
+}
+
+/* Estado activo — se aplica automáticamente cuando la ruta coincide */
+.sidebar-menu button.activo {
+  background: var(--verde-botones);  /* color más claro que el fondo */
+  transform: translateX(3px);        /* mismo efecto que el hover */
+  border-left: 3px solid #a8d5b5;   /* línea indicadora a la izquierda */
+}

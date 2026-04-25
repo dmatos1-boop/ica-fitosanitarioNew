@@ -1,0 +1,35 @@
+<div class="inicio-container">
+
+  <div class="inicio-header">
+    <h2>Bienvenido, Administrador</h2>
+    <p>Panel de control</p>
+  </div>
+
+  <!-- TARJETAS RESUMEN -->
+  <div class="cards-grid">
+    <div class="card" *ngFor="let item of resumen">
+      <span class="card-icono">{{ item.icono }}</span>
+      <div class="card-info">
+        <span class="card-valor">{{ item.valor }}</span>
+        <span class="card-label">{{ item.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETAS DE PENDIENTES -->
+  <div class="pendientes">
+    <h2>Tareas Pendientes sin Resolver</h2>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card" *ngFor="let item of pendientesData">
+      <span class="card-icono">{{ item.icono }}</span>
+      <div class="card-info">
+        <span class="card-valor">{{ item.valor }}</span>
+        <span class="card-label">{{ item.label }}</span>
+      </div>
+      <button class="boton-res" (click)="pendientes(item)">Resolver</button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,53 @@
+<!-- LISTA -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+  <div class="modulo-header">
+    <h2>Gestión de Usuarios</h2>
+    <button class="btn-nuevo" (click)="nuevoUsuario()">+ Nuevo Usuario</button>
+  </div>
+
+  <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+  <div *ngIf="cargando" class="cargando">Cargando usuarios...</div>
+
+  <table class="tabla" *ngIf="!cargando">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuarios">
+        <td>{{ u.nombre }} {{ u.apellido }}</td>
+        <td>{{ u.correo }}</td>
+        <td>{{ u.rol }}</td>
+        <td>
+          <span [class]="'badge badge-' + u.estado.toLowerCase()">{{ u.estado }}</span>
+        </td>
+        <td class="acciones">
+          <button class="btn-editar" (click)="editar(u)">Editar</button>
+          <button class="btn-toggle" (click)="toggleEstado(u)">
+            {{ u.estado === 'Activo' ? 'Desactivar' : 'Activar' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FORMULARIO -->
+<app-form-usuario
+  *ngIf="vista === 'formulario'"
+  [usuarioEditar]="usuarioSeleccionado"
+  (formularioGuardado)="alGuardar($event)"
+  (cancelado)="alCancelar()">
+</app-form-usuario>
+
+<!-- ÉXITO -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  [mensaje]="usuarioSeleccionado ? 'El usuario fue actualizado correctamente.' : 'El usuario fue creado correctamente.'"
+  (volver)="volver()">
+</app-exito>

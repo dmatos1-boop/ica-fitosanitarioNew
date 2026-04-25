@@ -1,0 +1,33 @@
+<div class="">
+
+            <h3>Predios Registrados</h3>
+
+            <table class="tabla">
+
+            <thead >
+            <tr>
+            <th>Nombre del Predio</th>
+            <th>Municipio</th>
+            <th>Área</th>
+            <th>Estado</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr *ngFor="let predio of predios">
+
+            <td>{{predio.nombre}}</td>
+            <td>{{predio.municipio}}</td>
+            <td>{{predio.area}}</td>
+            <td>
+                <span *ngIf="predio.estado== 'Activo'">🟢</span>
+                <span *ngIf="predio.estado== 'Visita Pendiente'">🟡</span>
+                {{predio.estado}}</td>
+
+            </tr>
+
+            </tbody>
+
+            </table>
+</div>

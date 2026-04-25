@@ -1,0 +1,32 @@
+# Angular
+.angular/
+node_modules/
+dist/
+
+# Backend
+backend/node_modules/
+backend/dist/
+
+# Environment files (keep template, not real values)
+# backend/.env  <- keep this for reference
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.suo
+*.user
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build
+/dist
+/tmp
+/out-tsc
+
+# TypeScript
+*.tsbuildinfo

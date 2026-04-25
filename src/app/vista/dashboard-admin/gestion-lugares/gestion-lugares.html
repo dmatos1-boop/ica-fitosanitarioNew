@@ -1,0 +1,86 @@
+<!-- LISTA -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+  <div class="modulo-header">
+    <h2>Gestión de Lugares de Producción</h2>
+    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Lugar</button>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Productor</th>
+        <th>Predio Asociado</th>
+        <th>Extensión (ha)</th>
+        <th>Número ICA</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let l of lugares">
+        <td>{{ l.nombre }}</td>
+        <td>{{ l.productorTitular }}</td>
+        <td>{{ l.predioAsociado }}</td>
+        <td>{{ l.extension }}</td>
+        <td>{{ l.numeroICA }}</td>
+        <td><span [class]="'badge badge-' + l.estado.toLowerCase()">{{ l.estado }}</span></td>
+        <td class="acciones">
+          <button class="btn-editar" (click)="abrirEditar(l)">Editar</button>
+          <ng-container *ngIf="l.estado === 'Pendiente'">
+            <button class="btn-aprobar" (click)="aprobar(l)">Activar</button>
+            <button class="btn-rechazar" (click)="abrirRechazo(l)">Rechazar</button>
+          </ng-container>
+          <ng-container *ngIf="l.estado === 'Activo'">
+            <button class="btn-rechazar" (click)="desactivar(l)">Desactivar</button>
+          </ng-container>
+          <ng-container *ngIf="l.estado === 'Inactivo'">
+            <button class="btn-aprobar" (click)="aprobar(l)">Activar</button>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FORMULARIO -->
+<div *ngIf="vista === 'formulario'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>{{ modoEdicion ? 'Editar Lugar de Producción' : 'Nuevo Lugar de Producción' }}</h2>
+  </div>
+
+  <div class="formulario">
+
+    <div class="campo"><label>Nombre del lugar</label>
+      <input type="text" [(ngModel)]="formulario.nombre"/></div>
+
+    <div class="campo"><label>Documento del productor titular</label>
+      <input type="text" [(ngModel)]="formulario.productorTitular"/></div>
+
+    <div class="campo"><label>Predio asociado (número ICA del predio)</label>
+      <input type="text" [(ngModel)]="formulario.predioAsociado"/></div>
+
+    <div class="campo"><label>Extensión (hectáreas)</label>
+      <input type="number" [(ngModel)]="formulario.extension"/></div>
+
+    <div class="campo" *ngIf="modoEdicion">
+      <label>Número ICA (generado automáticamente)</label>
+      <input type="text" [value]="formulario.numeroICA" readonly class="input-readonly"/>
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar" (click)="alGuardar(formulario)">Guardar</button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ÉXITO -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  mensaje="El lugar de producción ha sido actualizado correctamente."
+  (volver)="volver()">
+</app-exito>

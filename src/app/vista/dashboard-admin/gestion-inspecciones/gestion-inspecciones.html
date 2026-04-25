@@ -1,0 +1,201 @@
+<!-- ══════════════ VISTA: LISTA ══════════════ -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Gestión de Inspecciones</h2>
+    <button class="btn-nuevo" (click)="nuevaInspeccion()">+ Nueva Inspección</button>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Lugar de Producción</th>
+        <th>Tipo</th>
+        <th>Fecha</th>
+        <th>Técnico Asignado</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ins of inspecciones">
+        <td>{{ ins.codigo }}</td>
+        <td>{{ ins.lugarProduccion }}</td>
+        <td>{{ ins.tipo }}</td>
+        <td>{{ ins.fechaProgramada }}</td>
+        <td>
+          <span *ngIf="ins.tecnicoAsignado; else sinTecnico">
+            {{ ins.tecnicoAsignado }}
+          </span>
+          <ng-template #sinTecnico>
+            <span class="badge badge-pendiente">Sin asignar</span>
+          </ng-template>
+        </td>
+        <td>
+          <span [class]="'badge badge-' + ins.estado.toLowerCase()">
+            {{ ins.estado }}
+          </span>
+        </td>
+        <td class="acciones">
+  <ng-container *ngIf="ins.estado === 'Solicitada'">
+    <button class="btn-aprobar" (click)="abrirAsignacion(ins)">Asignar técnico</button>
+    <button class="btn-cancelar-ins" (click)="abrirCancelacion(ins)">Cancelar</button>
+  </ng-container>
+  <ng-container *ngIf="ins.estado === 'Programada'">
+    <button class="btn-reasignar" (click)="abrirReasignacion(ins)">Reasignar técnico</button>
+    <button class="btn-cancelar-ins" (click)="abrirCancelacion(ins)">Cancelar</button>
+  </ng-container>
+  <span *ngIf="ins.estado === 'Realizada' || ins.estado === 'Cancelada'"
+    style="color:#999; font-size:0.8rem;">—</span>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ══════════════ VISTA: FORMULARIO ══════════════ -->
+<div *ngIf="vista === 'formulario'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>
+      {{ modoFormulario === 'nueva'     ? 'Nueva Inspección'          :
+         modoFormulario === 'asignar'   ? 'Aprobar y Asignar Técnico' :
+         'Reasignar Técnico' }}
+    </h2>
+  </div>
+
+  <div class="formulario">
+
+    <!-- ── Modo: Nueva inspección ── -->
+    <ng-container *ngIf="modoFormulario === 'nueva'">
+
+      <div class="campo">
+        <label>Lugar de Producción</label>
+        <select [(ngModel)]="formulario.lugarProduccion">
+          <option value="">Seleccione un lugar...</option>
+          <option *ngFor="let lugar of lugaresActivos" [value]="lugar.nroRegistroICA">
+            {{ lugar.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Tipo de Inspección</label>
+        <select [(ngModel)]="formulario.tipo">
+          <option value="">Seleccione el tipo...</option>
+          <option *ngFor="let tipo of tiposInspeccion" [value]="tipo">
+            {{ tipo }}
+          </option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Fecha Programada</label>
+        <input type="date" [(ngModel)]="formulario.fechaProgramada"/>
+      </div>
+
+      <div class="campo">
+        <label>Técnico Asignado</label>
+        <select [(ngModel)]="tecnicoSeleccionado">
+          <option value="">Seleccione un técnico...</option>
+          <option *ngFor="let tec of tecnicosActivos" [value]="tec.identificacion">
+            {{ tec.nombre }} {{ tec.apellido }}
+          </option>
+        </select>
+      </div>
+
+    </ng-container>
+
+    <!-- ── Modo: Asignar técnico ── -->
+    <ng-container *ngIf="modoFormulario === 'asignar'">
+
+      <div class="info-reasignacion">
+        <p class="info-titulo">Datos de la solicitud</p>
+        <div class="info-fila">
+          <span class="info-label">Código:</span>
+          <span>{{ inspeccionSeleccionada?.codigo }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Lugar:</span>
+          <span>{{ inspeccionSeleccionada?.lugarProduccion }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Tipo:</span>
+          <span>{{ inspeccionSeleccionada?.tipo }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Fecha solicitada:</span>
+          <span>{{ inspeccionSeleccionada?.fechaProgramada }}</span>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Técnico Asignado</label>
+        <select [(ngModel)]="tecnicoSeleccionado">
+          <option value="">Seleccione un técnico...</option>
+          <option *ngFor="let tec of tecnicosActivos" [value]="tec.identificacion">
+            {{ tec.nombre }} {{ tec.apellido }}
+          </option>
+        </select>
+      </div>
+
+    </ng-container>
+
+    <!-- ── Modo: Reasignar técnico ── -->
+    <ng-container *ngIf="modoFormulario === 'reasignar'">
+
+      <div class="info-reasignacion">
+        <p class="info-titulo">Inspección programada</p>
+        <div class="info-fila">
+          <span class="info-label">Código:</span>
+          <span>{{ inspeccionSeleccionada?.codigo }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Lugar:</span>
+          <span>{{ inspeccionSeleccionada?.lugarProduccion }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Fecha:</span>
+          <span>{{ inspeccionSeleccionada?.fechaProgramada }}</span>
+        </div>
+        <div class="info-fila">
+          <span class="info-label">Técnico actual:</span>
+          <span class="tecnico-actual">{{ inspeccionSeleccionada?.tecnicoAsignado }}</span>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Nuevo Técnico Asignado</label>
+        <select [(ngModel)]="tecnicoSeleccionado">
+          <option value="">Seleccione un técnico...</option>
+          <option *ngFor="let tec of tecnicosActivos" [value]="tec.identificacion">
+            {{ tec.nombre }} {{ tec.apellido }}
+          </option>
+        </select>
+      </div>
+
+    </ng-container>
+
+    <div class="form-botones">
+      <button class="btn-guardar" (click)="guardar()">
+        {{ modoFormulario === 'nueva'   ? 'Guardar inspección'   :
+           modoFormulario === 'asignar' ? 'Aprobar y asignar'    :
+           'Confirmar reasignación' }}
+      </button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════════ VISTA: ÉXITO ══════════════ -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  [mensaje]="modoFormulario === 'nueva'   ? 'La inspección ha sido programada correctamente.'   :
+             modoFormulario === 'asignar' ? 'La inspección fue aprobada y el técnico asignado.' :
+             'El técnico ha sido reasignado correctamente.'"
+  (volver)="volver()">
+</app-exito>

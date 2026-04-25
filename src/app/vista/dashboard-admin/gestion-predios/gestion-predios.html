@@ -1,0 +1,102 @@
+<!-- ══════════ LISTA ══════════ -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Gestión de Predios</h2>
+    <button class="btn-nuevo" (click)="nuevoPredio()">+ Nuevo Predio</button>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Propietario</th>
+        <th>Departamento</th>
+        <th>Municipio</th>
+        <th>Extensión (ha)</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of predios">
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.propietario }}</td>
+        <td>{{ p.departamento }}</td>
+        <td>{{ p.municipio }}</td>
+        <td>{{ p.extension }}</td>
+        <td><span [class]="'badge badge-' + p.estado.toLowerCase()">{{ p.estado }}</span></td>
+        <td class="acciones">
+          <button class="btn-editar" (click)="editar(p)">Editar</button>
+          <!-- Solo si está pendiente muestra aprobar/rechazar -->
+          <ng-container *ngIf="p.estado === 'Pendiente'">
+            <button class="btn-aprobar"  (click)="aprobar(p)">Aprobar</button>
+            <button class="btn-rechazar" (click)="abrirRechazo(p)">Rechazar</button>
+          </ng-container>
+          <!-- Solo si está activo muestra desactivar -->
+          <button *ngIf="p.estado === 'Activo'" class="btn-rechazar" (click)="desactivar(p)">Desactivar</button>
+          <ng-container>
+          <button *ngIf="p.estado === 'Inactivo'" class="btn-aprobar" (click)="aprobar(p)">Activar</button>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════ FORMULARIO ══════════ -->
+<div *ngIf="vista === 'formulario'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>{{ modoEdicion ? 'Editar Predio' : 'Nuevo Predio' }}</h2>
+  </div>
+
+  <div class="formulario">
+
+    <div class="campo"><label>Nombre del predio</label>
+      <input type="text" placeholder="El prado"  [(ngModel)]="formulario.nombre"/></div>
+
+    <div class="campo"><label>Propietario</label>
+      <input type="text" placeholder="Nombre del Propietario"  [(ngModel)]="formulario.propietario"/></div>
+
+    <div class="campo"><label>Documento del propietario</label>
+      <input type="text" placeholder="Numero de documento"  [(ngModel)]="formulario.documentoPropietario"/></div>
+
+    <div class="campo"><label>Departamento</label>
+      <select [(ngModel)]="formulario.departamento" name="departamento" >
+      <option type = "text" *ngFor="let dep of departamentos">{{dep}}</option>
+      </select>
+    </div>
+          <div class="campo"><label>Municipio</label>
+      <input type="text" [(ngModel)]="formulario.municipio"/></div>
+
+    <div class="campo"><label>Vereda</label>
+      <input type="text" [(ngModel)]="formulario.vereda"/></div>
+
+    <div class="campo"><label>Extensión (hectáreas)</label>
+      <input type="number" [(ngModel)]="formulario.extension"/></div>
+
+    <div class="campo"><label>Correo</label>
+      <input type="email" [(ngModel)]="formulario.correo"/></div>
+
+    <!-- Número ICA solo se muestra en edición, es de solo lectura -->
+    <div class="campo" *ngIf="modoEdicion && formulario.numeroICA">
+      <label>Número ICA (generado automáticamente)</label>
+      <input type="text" [value]="formulario.numeroICA" readonly class="input-readonly"/>
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar"  (click)="guardar()">Guardar</button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════ ÉXITO ══════════ -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  mensaje="Los predios han sido actualizados correctamente."
+  (volver)="volver()">
+</app-exito>

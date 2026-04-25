@@ -1,0 +1,58 @@
+{
+  "folders": [
+    {
+      "name": "🌿 ICA Fitosanitario (Raíz)",
+      "path": "."
+    },
+    {
+      "name": "⚡ Frontend (Angular)",
+      "path": "."
+    },
+    {
+      "name": "🔧 Backend (Node.js)",
+      "path": "backend"
+    }
+  ],
+  "settings": {
+    "terminal.integrated.env.windows": {},
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "*.ts": "${capture}.html, ${capture}.css, ${capture}.spec.ts"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "angular.ng-template",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "Frontend - ng serve",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["start"],
+        "cwd": "${workspaceFolder:🌿 ICA Fitosanitario (Raíz)}"
+      },
+      {
+        "name": "Backend - npm run dev",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "cwd": "${workspaceFolder:🔧 Backend (Node.js)}"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "🚀 Full Stack (Frontend + Backend)",
+        "configurations": ["Frontend - ng serve", "Backend - npm run dev"],
+        "stopAll": true
+      }
+    ]
+  }
+}

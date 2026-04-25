@@ -1,0 +1,78 @@
+<div class="form-container">
+  <h1>Registro de Producción</h1>
+
+  <form (ngSubmit)="registrarProduccion()">
+
+    <!-- Selección de predio -->
+    <h2>Predio</h2>
+    <label>Selecciona el predio</label>
+    <select [(ngModel)]="formData.predioId" name="predio">
+      <option *ngFor="let predio of predios" [value]="predio.id">   
+        {{ predio.nombre }}
+      </option>
+    </select>
+
+    <!-- Producción agrícola -->
+    <h2>Producción Agrícola</h2>
+
+    <label>Tipo de cultivo</label>
+    <select [(ngModel)]="formData.cultivo" name="cultivo">
+      <option value="cafe">Café</option>
+      <option value="maiz">Maíz</option>
+      <option value="arroz">Arroz</option>
+      <option value="frutas">Frutas</option>
+      <option value="hortalizas">Hortalizas</option>
+      <option value="otro">Otro</option>
+    </select>
+
+    <label>Área sembrada (hectáreas)</label>
+    <input type="number" [(ngModel)]="formData.area" name="area">
+
+    <label>Tipo de producción</label>
+    <select [(ngModel)]="formData.tipoProduccion" name="tipoProduccion">
+      <option value="organica">Orgánica</option>
+      <option value="convencional">Convencional</option>
+      <option value="mixta">Mixta</option>
+    </select>
+
+    <label>Fecha de siembra</label>
+    <input type="date" [(ngModel)]="formData.fechaSiembra" name="fechaSiembra">
+
+    <label>Fecha estimada de cosecha</label>
+    <input type="date" [(ngModel)]="formData.fechaCosecha" name="fechaCosecha">
+
+    <!-- Recursos -->
+    <h2>Recursos</h2>
+
+    <label>Fuente de agua</label>
+    <select [(ngModel)]="formData.fuenteAgua" name="fuenteAgua">
+      <option value="rio">Río</option>
+      <option value="pozo">Pozo</option>
+      <option value="lluvia">Lluvia</option>
+      <option value="acueducto">Acueducto</option>
+    </select>
+
+    <label>Sistema de riego</label>
+    <select [(ngModel)]="formData.riego" name="riego">
+      <option value="manual">Manual</option>
+      <option value="goteo">Goteo</option>
+      <option value="aspersion">Aspersión</option>
+      <option value="ninguno">Ninguno</option>
+    </select>
+
+    <!-- Producción estimada -->
+    <h2>Producción</h2>
+
+    <label>Cantidad estimada (kg)</label>
+    <input type="number" [(ngModel)]="formData.cantidad" name="cantidad">
+
+    <label>Destino</label>
+    <select [(ngModel)]="formData.destino" name="destino">
+      <option value="consumo">Consumo propio</option>
+      <option value="venta">Venta local</option>
+      <option value="exportacion">Exportación</option>
+    </select>
+
+    <button type="submit">Registrar</button>
+  </form>
+</div>  

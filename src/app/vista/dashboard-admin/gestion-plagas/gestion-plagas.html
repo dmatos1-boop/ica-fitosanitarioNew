@@ -1,0 +1,82 @@
+<!-- ══════════ LISTA ══════════ -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Gestión de Plagas</h2>
+    <button class="btn-nuevo" (click)="nuevo()">+ Nueva Plaga</button>
+  </div>
+
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>Cultivo Asociado</th>
+        <th>Umbral de Alerta</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of plagas">
+        <td>{{ p.id }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.cultivoAsociado }}</td>
+        <td>{{ p.umbralAlerta }}</td>
+        <td><span [class]="'badge badge-' + p.estado.toLowerCase()">{{ p.estado }}</span></td>
+        <td class="acciones">
+  <button class="btn-editar" (click)="editar(p)">Editar</button>
+  <button *ngIf="p.estado === 'Activo'" class="btn-rechazar" (click)="toggleEstado(p)">Desactivar</button>
+  <button *ngIf="p.estado === 'Inactivo'" class="btn-aprobar" (click)="toggleEstado(p)">Activar</button>
+  <button *ngIf="p.estado === 'Inactivo'" class="btn-rechazar" (click)="eliminar(p)">Eliminar</button>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ══════════ FORMULARIO ══════════ -->
+<div *ngIf="vista === 'formulario'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>{{ modoEdicion ? 'Editar Plaga' : 'Nueva Plaga' }}</h2>
+  </div>
+
+  <div class="formulario">
+
+    <div class="campo"><label>Nombre de la Plaga</label>
+      <input type="text" placeholder="Ej: Mosca blanca" [(ngModel)]="formulario.nombre"/>
+    </div>
+
+    <div class="campo">
+      <label>Cultivo Asociado</label>
+      <select [(ngModel)]="formulario.cultivoAsociado" name="cultivo">
+        <option value="">Seleccione un cultivo</option>
+        <option *ngFor="let cultivo of CultivosAsociados" [value]="cultivo.nombreComun">
+          {{ cultivo.nombreComun }}
+        </option>
+      </select>
+    </div>
+
+    <div class="campo"><label>Umbral de Alerta (%)</label>
+      <input type="number" [(ngModel)]="formulario.umbralAlerta"/>
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar" [disabled]="cargando" (click)="guardar()">
+        {{ cargando ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════ ÉXITO ══════════ -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  mensaje="La plaga ha sido guardada correctamente."
+  (volver)="volver()">
+</app-exito>

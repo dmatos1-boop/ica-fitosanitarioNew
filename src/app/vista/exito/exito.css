@@ -1,0 +1,21 @@
+.exito-container { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  min-height: 60vh; 
+}
+.exito-card { 
+  text-align: center; 
+  background: #fff; 
+  padding: 3rem; 
+  border-radius: 16px; 
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.exito-icono { 
+  font-size: 3rem; 
+}
+.exito-card h3 { 
+  color: #2d6a4f; 
+  margin: 1rem 0 0.5rem; 
+  font-size: 1.4rem;  
+}

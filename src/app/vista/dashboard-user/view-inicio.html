@@ -1,0 +1,22 @@
+    <div >
+
+        <h1>Bienvenido Productor</h1>
+
+        <p>Aquí tienes un resumen de tus actividades recientes.</p>
+
+        <div class="cards-grid"> 
+        <div class="card" *ngFor="let item of accesos">
+            <span class="card-icono">{{ item.icono }}</span>
+        <div class="card-info">
+            <span class="card-valor">{{ item.valor }}</span>
+            <span class="card-label">{{ item.label }}</span>
+            <div class="fecha-ultima" *ngIf="item.date">
+            <h3>Fecha de Aprobacion:</h3>
+            <span class="card-fecha">{{item.date}}</span>
+            </div>
+            
+        </div>
+            <button class="boton-res" [routerLink]="item.ruta"> Revisar </button>
+
+        </div>
+    </div>

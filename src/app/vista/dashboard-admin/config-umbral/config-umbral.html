@@ -1,0 +1,44 @@
+<!-- ══════════ FORMULARIO CON VALIDACIÓN ══════════ -->
+<div *ngIf="vista === 'formulario'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Configuración de Umbral de Incidencia</h2>
+  </div>
+
+  <!-- Mensaje de error si los rangos se solapan o tienen huecos -->
+  <div *ngIf="errorRangos" class="alerta-error">⚠️ {{ errorRangos }}</div>
+
+  <div class="formulario">
+
+    <h3>Nivel Bajo</h3>
+    <div class="rango-grupo">
+      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.bajo.min"/></div>
+      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.bajo.max"/></div>
+    </div>
+
+    <h3>Nivel Medio</h3>
+    <div class="rango-grupo">
+      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.medio.min"/></div>
+      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.medio.max"/></div>
+    </div>
+
+    <h3>Nivel Alto</h3>
+    <div class="rango-grupo">
+      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.alto.min"/></div>
+      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.alto.max"/></div>
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar" (click)="guardar()">Guardar cambios</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════ ÉXITO ══════════ -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  mensaje="Los umbrales han sido actualizados correctamente."
+  (volver)="volver()">
+</app-exito>

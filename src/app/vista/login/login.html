@@ -1,0 +1,32 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <h2 class="titulo">Iniciar Sesión</h2>
+    <p class="subtitulo">Bienvenido, ingresa tus datos</p>
+
+    <div class="campo-grupo">
+      <label>Correo electrónico</label>
+      <input
+        type="text"
+        placeholder="Ingresar correo"
+        [(ngModel)]="usuario"
+      >
+    </div>
+
+    <div class="campo-grupo">
+      <label>Contraseña</label>
+      <input
+        type="password"
+        placeholder="Ingresar contraseña"
+        [(ngModel)]="password"
+      >
+    </div>
+
+    <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+
+    <button class="btn-ingreso" (click)="login()" [disabled]="cargando">
+      {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+
+  </div>
+</div>

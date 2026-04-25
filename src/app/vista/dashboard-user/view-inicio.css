@@ -1,0 +1,68 @@
+
+/*CARTAS*/  
+.cards-grid { /* CONTENEDOR DE LAS TARJETAS EN EL DASHBOARD*/
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 10vh;
+}
+/* TARJETAS */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: flex; 
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card-icono {   /*TAMAÑO DE LOS ICONOS DENTRO DE LAS CARDS*/
+
+    font-size: 3rem;
+ }
+.card-valor { /* VALORES DENTRO DE LAS CARDS*/
+    font-size: 1.8rem;
+    font-weight: 700; color: #2d6a4f; 
+    display: block; 
+}
+/* TAMAÑO DE LA LETRA EN EL CARD*/
+.card-label { 
+    font-size: 1rem; 
+    color: #0c0c0c;
+    font-weight: bold;
+}
+.card-fecha{
+    font-size: 0.85rem;
+    color: #666;
+}
+.card-info{
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    
+    
+}
+
+.boton-res{
+    border: none;
+    border-radius: 10px;
+    background: var(--verde-botones);
+    padding: 10px;
+    color: white;
+}
+
+.boton-res:hover{
+    background: var(--verde-botones2);
+
+}
+
+.fecha-ultima h3{
+    margin-top: 10px;
+    font-size: 0.95rem; 
+    color: #666; 
+}
+.fecha-ultima p{
+    margin-top: 0px;
+    font-size: 0.85rem; 
+    color: #666; 
+}

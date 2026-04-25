@@ -1,0 +1,71 @@
+<div class="dashboard-container">
+
+ <app-sidebar></app-sidebar>
+
+
+
+
+
+<div class="main-content">
+  <nav class="navbar"><!--CREAMOS UN NAVBAR ESTETICO INDICANDO LA FECHA ACTUAL-->
+  <div class="logo">ASOHOFRUCOL</div>
+
+  <div class="fecha">
+    {{ fechaActual | date:'fullDate' }}<!--ESTAMOS LLAMANDO LA FUNCION-->
+  </div>
+</nav>
+
+
+  <router-outlet></router-outlet>
+
+
+</div>
+<!--TEMPORAL PARA QUE EL MODAL DE RECHAZO FUNCIONE-->
+<div *ngIf="configModal"
+    style="position:fixed; top:0; left:0; width:100vw; height:100vh;
+           background:rgba(0,0,0,0.5); display:flex; justify-content:center;
+           align-items:center; z-index:9999;">
+
+    <div style="background:white; padding:2rem; border-radius:12px;
+                width:420px; max-width:90%;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+
+      <h3 style="color:#2d6a4f; margin-bottom:0.75rem;">
+        {{ configModal.titulo }}
+      </h3>
+
+      <p style="color:#555; font-size:0.9rem; margin-bottom:0.5rem;">
+        Este campo es obligatorio antes de confirmar.
+      </p>
+
+      <textarea
+        [(ngModel)]="motivoModal"
+        rows="3"
+        [placeholder]="configModal.placeholder"
+        style="width:100%; padding:0.5rem; border:1px solid #ccc;
+               border-radius:6px; resize:vertical; font-size:0.9rem;
+               box-sizing:border-box; margin-bottom:1rem;">
+      </textarea>
+
+      <div style="display:flex; gap:1rem;">
+        <button
+          (click)="confirmarModal()"
+          style="background:#f8d7da; color:#842029; border:none;
+                 padding:0.5rem 1.2rem; border-radius:6px; cursor:pointer;
+                 font-weight:600;">
+          Confirmar
+        </button>
+        <button
+          (click)="cerrarModal()"
+          style="background:#e9ecef; color:#333; border:none;
+                 padding:0.5rem 1.2rem; border-radius:6px; cursor:pointer;">
+          Cancelar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+</div>
