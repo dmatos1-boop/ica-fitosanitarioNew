@@ -23,12 +23,6 @@ export class SidebarComponent implements OnInit {
     TECNICO: 'Técnico'
   };
 
-  // Mapeo de roles del backend a roles del menú
-  rolMenu: Record<string, string> = {
-    FUNCIONARIO_ICA: 'admin',
-    PRODUCTOR: 'productor',
-    TECNICO: 'tecnico'
-  };
 
   constructor(
     private menuService: MenuService,
@@ -38,9 +32,9 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.rol = localStorage.getItem('userRole') ?? '';
-      const rolParaMenu = this.rolMenu[this.rol] ?? this.rol;
-      this.menuItems = this.menuService.getMenu(rolParaMenu);
+      this.rol = (localStorage.getItem('userRole') ?? '').toUpperCase();
+      
+      this.menuItems = this.menuService.getMenu(this.rol);
     }
   }
 

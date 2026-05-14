@@ -9,9 +9,9 @@ export class AuthService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   private users = [
-    { usuario: 'admin', password: '1234', rol: 'admin' },
-    { usuario: 'productor', password: '12345', rol: 'productor' },
-    { usuario: 'tecnico', password: '123', rol: 'tecnico' }
+    { usuario: 'admin', password: '1234', rol: 'FUNCIONARIO_ICA' },
+    { usuario: 'productor', password: '12345', rol: 'PRODUCTOR' },
+    { usuario: 'tecnico', password: '123', rol: 'TECNICO' }
   ];
 
   login(usuario: string, password: string) {

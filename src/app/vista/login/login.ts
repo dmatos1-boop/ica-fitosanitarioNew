@@ -23,11 +23,11 @@ export class LoginComponent {
 
   login() {
     const rol = this.authController.login(this.usuario, this.password);
-    if (rol === 'admin') {
+    if (rol === 'FUNCIONARIO_ICA') {
       this.router.navigate(['/admin']);
-    } else if (rol === 'productor') {
+    } else if (rol === 'PRODUCTOR') {
       this.router.navigate(['/usuario']);
-    } else if (rol === 'tecnico') {
+    } else if (rol === 'TECNICO') {
       this.router.navigate(['/tecnico']);
     } else {
       alert('Usuario o contraseña incorrectos');

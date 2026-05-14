@@ -18,6 +18,7 @@ import { GestionPredios } from './vista/dashboard-admin/gestion-predios/gestion-
 import { GestionUsuariosComponent } from './vista/dashboard-admin/gestion-usuarios/gestion-usuarios';
 import { ConfigUmbral } from './vista/dashboard-admin/config-umbral/config-umbral';
 import { AdminInicio } from './vista/dashboard-admin/admin-inicio/admin-inicio';
+import { Misinspecciones } from './vista/dashboard-tecnico/inspecciones/inspecciones';
 
 
 
@@ -41,7 +42,12 @@ export const routes: Routes = [
     ]
    },
 
-  { path: 'tecnico', component: DashboardTecnicoComponent },
+  { path: 'tecnico', component: DashboardTecnicoComponent,
+    children:[
+      {path: 'inspecciones', component: Misinspecciones},
+      { path: '', redirectTo: 'inspecciones', pathMatch: 'full' }
+    ]
+  },
 
   { path: 'usuario', component: DashboardUserComponent,
     children:[
