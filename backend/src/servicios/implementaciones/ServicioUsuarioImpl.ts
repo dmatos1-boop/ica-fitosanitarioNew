@@ -8,14 +8,21 @@ export class ServicioUsuarioImpl implements IServicioUsuario {
 
   async crearNuevoUsuario(datos: any): Promise<any> {
     const claveCifrada = await servicioCifrado.cifrarContrasena(datos.clave);
-    console.log('Clave original:', datos.clave);
-    console.log('Clave cifrada:', claveCifrada);
-    const sql = `INSERT INTO USUARIO (identificacion, nombreUsuario, clave, nombre, apellido, telefono, email, rol, estado) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`;
-    const valores = [datos.identificacion, datos.nombreUsuario, claveCifrada,
-                     datos.nombre, datos.apellido, datos.telefono, datos.email, datos.rol];
+    const sql = `INSERT INTO USUARIO (identificacion, nombreUsuario, clave, nombre, apellido, telefono, email, rol, estado, nroTarjetaProfesional) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO', ?)`;
+    const valores = [
+      datos.identificacion,
+      datos.nombreUsuario,
+      claveCifrada,
+      datos.nombre,
+      datos.apellido,
+      datos.telefono,
+      datos.email,
+      datos.rol,
+      datos.nroTarjetaProfesional || null
+    ];
     return new Promise((resolve, reject) => {
-      conexion.query(sql, valores, (error, resultado) => {
+      conexion.query(sql, valores, (error, resultado: any) => {
         if (error) reject(error);
         else resolve(resultado);
       });

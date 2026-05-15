@@ -38,6 +38,14 @@
     </select>
   </div>
 
+  <div class="campo" *ngIf="formulario.rol === 'TECNICO'">
+    <label>Número de tarjeta profesional</label>
+    <input type="text" [(ngModel)]="formulario.nroTarjetaProfesional" 
+           placeholder="Número de tarjeta profesional"/>
+  </div>
+
+  <div class="form-botones">
+
   <div class="form-botones">
     <button class="btn-guardar" (click)="guardar()">Guardar</button>
     <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>

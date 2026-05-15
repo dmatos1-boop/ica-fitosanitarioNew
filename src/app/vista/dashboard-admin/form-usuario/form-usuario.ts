@@ -12,6 +12,7 @@ export interface Usuario {
   correo: string;
   rol: string;
   estado: 'Activo' | 'Inactivo';
+  nroTarjetaProfesional?: string;
 }
 
 
