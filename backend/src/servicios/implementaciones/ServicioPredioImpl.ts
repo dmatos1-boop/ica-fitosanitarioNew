@@ -1,5 +1,5 @@
 import { IServicioPredio } from '../interfaces/IServicioPredio';
-import conexion from '../../infraestructura/ConexionBaseDatos';
+import conexion from '../../infraestructura/ConexionProduccion';
 
 export class ServicioPredioImpl implements IServicioPredio {
 

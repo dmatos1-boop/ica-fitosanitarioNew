@@ -1,5 +1,5 @@
 import { IServicioPlaga } from '../interfaces/IServicioPlaga';
-import conexion from '../../infraestructura/ConexionBaseDatos';
+import conexion from '../../infraestructura/ConexionProduccion';
 
 export class ServicioPlagaImpl implements IServicioPlaga {
 

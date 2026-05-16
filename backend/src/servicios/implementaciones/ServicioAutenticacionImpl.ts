@@ -1,7 +1,7 @@
 import { IServicioAutenticacion } from '../interfaces/IServicioAutenticacion';
 import { ServicioSesionUsuario } from '../apoyo/ServicioSesionUsuario';
 import { ServicioCifradoClave } from '../apoyo/ServicioCifradoClave';
-import conexion from '../../infraestructura/ConexionBaseDatos';
+import conexion from '../../infraestructura/ConexionUsuarios';
 
 export class ServicioAutenticacionImpl implements IServicioAutenticacion {
 

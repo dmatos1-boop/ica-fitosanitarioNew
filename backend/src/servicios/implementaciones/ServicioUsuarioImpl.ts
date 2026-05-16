@@ -1,6 +1,6 @@
 import { IServicioUsuario } from '../interfaces/IServicioUsuario';
 import { ServicioCifradoClave } from '../apoyo/ServicioCifradoClave';
-import conexion from '../../infraestructura/ConexionBaseDatos';
+import conexion from '../../infraestructura/ConexionUsuarios';
 
 const servicioCifrado = new ServicioCifradoClave();
 

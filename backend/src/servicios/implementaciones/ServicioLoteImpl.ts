@@ -1,5 +1,5 @@
 import { IServicioLote } from '../interfaces/IServicioLote';
-import conexion from '../../infraestructura/ConexionBaseDatos';
+import conexion from '../../infraestructura/ConexionProduccion';
 
 export class ServicioLoteImpl implements IServicioLote {
 

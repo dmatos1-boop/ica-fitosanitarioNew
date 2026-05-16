@@ -1,7 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import './infraestructura/ConexionBaseDatos';
+import './infraestructura/ConexionUsuarios';
+import './infraestructura/ConexionProduccion';
+import './infraestructura/ConexionInspecciones';
 import rutasUsuario from './controladores/rutas/rutasUsuario';
 import rutasAutenticacion from './controladores/rutas/rutasAutenticacion';
 import rutasPredio from './controladores/rutas/rutasPredio';
