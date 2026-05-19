@@ -19,6 +19,7 @@ import { GestionUsuariosComponent } from './vista/dashboard-admin/gestion-usuari
 import { ConfigUmbral } from './vista/dashboard-admin/config-umbral/config-umbral';
 import { AdminInicio } from './vista/dashboard-admin/admin-inicio/admin-inicio';
 import { Misinspecciones } from './vista/dashboard-tecnico/inspecciones/inspecciones';
+import { Incio } from './vista/dashboard-tecnico/incio/incio';
 
 
 
@@ -44,6 +45,7 @@ export const routes: Routes = [
 
   { path: 'tecnico', component: DashboardTecnicoComponent,
     children:[
+      {path: 'inicio', component:Incio},
       {path: 'inspecciones', component: Misinspecciones},
       { path: '', redirectTo: 'inspecciones', pathMatch: 'full' }
     ]

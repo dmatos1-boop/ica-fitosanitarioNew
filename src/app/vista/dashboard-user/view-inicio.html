@@ -1,22 +1,71 @@
-    <div >
-
-        <h1>Bienvenido Productor</h1>
-
-        <p>Aquí tienes un resumen de tus actividades recientes.</p>
-
-        <div class="cards-grid"> 
-        <div class="card" *ngFor="let item of accesos">
-            <span class="card-icono">{{ item.icono }}</span>
-        <div class="card-info">
-            <span class="card-valor">{{ item.valor }}</span>
-            <span class="card-label">{{ item.label }}</span>
-            <div class="fecha-ultima" *ngIf="item.date">
-            <h3>Fecha de Aprobacion:</h3>
-            <span class="card-fecha">{{item.date}}</span>
-            </div>
-            
-        </div>
-            <button class="boton-res" [routerLink]="item.ruta"> Revisar </button>
-
-        </div>
+    
+      <div class="inicio-header">
+    <div class="bienvenida">
+      <h2>{{ saludo }}, {{ nombreProd }}</h2>
+       <p>Aquí tienes un resumen de tus actividades recientes.</p>
     </div>
+  
+  </div>
+
+
+<div class="cards-grid">
+
+  <div class="tarjeta tarjeta-productor" *ngFor="let item of accesos">
+
+    <!-- HEADER -->
+    <div class="tarjeta-header">
+
+      <div class="tarjeta-icono">
+        {{ item.icono }}
+      </div>
+
+      <div>
+
+        <div class="tarjeta-total">
+          <span class="numero">
+            {{ item.valor }}
+          </span>
+
+          <span class="numero-label">
+            registros
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="tarjeta-separador"></div>
+
+    <!-- CONTENIDO -->
+    <div class="proxima-seccion">
+
+      <p class="proxima-titulo">
+        {{ item.label }}
+      </p>
+
+      <div class="proxima-dato">
+        <span class="proxima-label">Última aprobación</span>
+
+        <span class="proxima-valor resaltado">
+          {{ item.date }}
+        </span>
+      </div>
+
+      <div class="proxima-dato">
+        <span class="proxima-label">Estado</span>
+
+        <span class="proxima-valor">
+          Activo
+        </span>
+      </div>
+
+    </div>
+
+    <button class="boton-res" [routerLink]="item.ruta">
+      Revisar
+    </button>
+
+  </div>
+
+</div>

@@ -124,7 +124,6 @@
     <h2>Realizar Inspección Fitosanitaria</h2>
   </div>
 
-  <!-- Info de la inspección que se está realizando -->
   <div class="info-inspeccion">
     <span>{{ inspeccionSeleccionada?.codigo }}</span>
     <span>—</span>
@@ -135,43 +134,86 @@
 
   <div class="formulario">
 
+    <!-- Estado fenológico -->
     <div class="campo">
       <label>Estado fenológico del cultivo</label>
       <input
         type="text"
         [(ngModel)]="formFito.estadoFenologico"
-        placeholder="Ej: Floración, Fructificación, Vegetativo..."/>
+        placeholder="Ej: Floración, Fructificación, Vegetativo..."
+        [class.campo-error]="erroresFito['estadoFenologico']"/>
+      <!-- Mensaje de error debajo del campo -->
+      <span *ngIf="erroresFito['estadoFenologico']" class="mensaje-error">
+        ⚠ {{ erroresFito['estadoFenologico'] }}
+      </span>
     </div>
 
+    <!-- Área inspeccionada -->
     <div class="campo">
       <label>Área inspeccionada (hectáreas)</label>
-      <input type="number" [(ngModel)]="formFito.areaInspeccionada" min="0"/>
+      <input
+        type="number"
+        [(ngModel)]="formFito.areaInspeccionada"
+        min="0"
+        [class.campo-error]="erroresFito['areaInspeccionada']"/>
+      <span *ngIf="erroresFito['areaInspeccionada']" class="mensaje-error">
+        ⚠ {{ erroresFito['areaInspeccionada'] }}
+      </span>
     </div>
 
-    <!-- Fila de dos columnas para datos de plantas -->
+    <!-- Total y afectadas en dos columnas -->
     <div class="campos-dobles">
       <div class="campo">
         <label>Cantidad total de plantas</label>
-        <input type="number" [(ngModel)]="formFito.totalPlantas" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formFito.totalPlantas"
+          min="0"
+          [class.campo-error]="erroresFito['totalPlantas']"/>
+        <span *ngIf="erroresFito['totalPlantas']" class="mensaje-error">
+          ⚠ {{ erroresFito['totalPlantas'] }}
+        </span>
       </div>
       <div class="campo">
         <label>Cantidad de plantas afectadas</label>
-        <input type="number" [(ngModel)]="formFito.plantasAfectadas" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formFito.plantasAfectadas"
+          min="0"
+          [class.campo-error]="erroresFito['plantasAfectadas']"/>
+        <span *ngIf="erroresFito['plantasAfectadas']" class="mensaje-error">
+          ⚠ {{ erroresFito['plantasAfectadas'] }}
+        </span>
       </div>
     </div>
 
+    <!-- Proyectada y cosechada -->
     <div class="campos-dobles">
       <div class="campo">
         <label>Cantidad proyectada</label>
-        <input type="number" [(ngModel)]="formFito.cantidadProyectada" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formFito.cantidadProyectada"
+          min="0"
+          [class.campo-error]="erroresFito['cantidadProyectada']"/>
+        <span *ngIf="erroresFito['cantidadProyectada']" class="mensaje-error">
+          ⚠ {{ erroresFito['cantidadProyectada'] }}
+        </span>
       </div>
       <div class="campo">
         <label>Cantidad real cosechada</label>
-        <input type="number" [(ngModel)]="formFito.cantidadCosechada" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formFito.cantidadCosechada"
+          min="0"
+          [class.campo-error]="erroresFito['cantidadCosechada']"/>
+        <span *ngIf="erroresFito['cantidadCosechada']" class="mensaje-error">
+          ⚠ {{ erroresFito['cantidadCosechada'] }}
+        </span>
       </div>
     </div>
 
-    <!-- Porcentaje calculado en tiempo real como referencia visual -->
+    <!-- Preview del cálculo en tiempo real -->
     <div class="calculo-preview" *ngIf="formFito.totalPlantas > 0">
       <span>Porcentaje de infestación estimado:</span>
       <strong>
@@ -179,6 +221,7 @@
       </strong>
     </div>
 
+    <!-- Comentarios — opcional, sin validación -->
     <div class="campo">
       <label>Comentarios <span class="opcional">(opcional)</span></label>
       <textarea
@@ -188,12 +231,19 @@
       </textarea>
     </div>
 
+    <!-- Resumen de errores al tope si hay varios -->
+    <div *ngIf="Object.keys(erroresFito).length > 0" class="resumen-errores">
+      ⚠ Hay {{ Object.keys(erroresFito).length }} campo(s) con errores. Revíselos antes de continuar.
+    </div>
+
     <div class="form-botones">
       <button class="btn-guardar"  (click)="guardarFito()">Guardar inspección</button>
       <button class="btn-cancelar" (click)="volver()">Cancelar</button>
     </div>
 
   </div>
+
+
 
 </div>
 
@@ -263,7 +313,6 @@
     <h2>Realizar Inspección Técnica</h2>
   </div>
 
-  <!-- Info de la inspección que se está realizando -->
   <div class="info-inspeccion">
     <span>{{ inspeccionSeleccionada?.codigo }}</span>
     <span>—</span>
@@ -279,41 +328,91 @@
     <div class="campos-dobles">
       <div class="campo">
         <label>Área de acopio</label>
-        <input type="number" [(ngModel)]="formTecnica.areaAcopio" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaAcopio"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaAcopio']"/>
+        <span *ngIf="erroresTecnica['areaAcopio']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaAcopio'] }}
+        </span>
       </div>
       <div class="campo">
         <label>Área de residuos vegetales</label>
-        <input type="number" [(ngModel)]="formTecnica.areaResiduosVegetales" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaResiduosVegetales"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaResiduosVegetales']"/>
+        <span *ngIf="erroresTecnica['areaResiduosVegetales']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaResiduosVegetales'] }}
+        </span>
       </div>
     </div>
 
     <div class="campos-dobles">
       <div class="campo">
         <label>Área de almacenamiento de insumos</label>
-        <input type="number" [(ngModel)]="formTecnica.areaAlmacenamiento" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaAlmacenamiento"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaAlmacenamiento']"/>
+        <span *ngIf="erroresTecnica['areaAlmacenamiento']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaAlmacenamiento'] }}
+        </span>
       </div>
       <div class="campo">
         <label>Área de dosificación</label>
-        <input type="number" [(ngModel)]="formTecnica.areaDosificacion" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaDosificacion"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaDosificacion']"/>
+        <span *ngIf="erroresTecnica['areaDosificacion']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaDosificacion'] }}
+        </span>
       </div>
     </div>
 
     <div class="campos-dobles">
       <div class="campo">
         <label>Área de residuos de mezclas</label>
-        <input type="number" [(ngModel)]="formTecnica.areaResiduosMezclas" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaResiduosMezclas"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaResiduosMezclas']"/>
+        <span *ngIf="erroresTecnica['areaResiduosMezclas']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaResiduosMezclas'] }}
+        </span>
       </div>
       <div class="campo">
         <label>Área de herramientas</label>
-        <input type="number" [(ngModel)]="formTecnica.areaHerramientas" min="0"/>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaHerramientas"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaHerramientas']"/>
+        <span *ngIf="erroresTecnica['areaHerramientas']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaHerramientas'] }}
+        </span>
       </div>
     </div>
 
     <div class="campo">
       <label>Área sanitaria</label>
-      <input type="number" [(ngModel)]="formTecnica.areaSanitaria" min="0"/>
+      <input
+        type="number"
+        [(ngModel)]="formTecnica.areaSanitaria"
+        min="0"
+        [class.campo-error]="erroresTecnica['areaSanitaria']"/>
+      <span *ngIf="erroresTecnica['areaSanitaria']" class="mensaje-error">
+        ⚠ {{ erroresTecnica['areaSanitaria'] }}
+      </span>
     </div>
 
+    <!-- Comentarios — opcional -->
     <div class="campo">
       <label>Comentarios <span class="opcional">(opcional)</span></label>
       <textarea
@@ -321,6 +420,11 @@
         rows="4"
         placeholder="Observaciones adicionales...">
       </textarea>
+    </div>
+
+    <!-- Resumen de errores -->
+    <div *ngIf="Object.keys(erroresTecnica).length > 0" class="resumen-errores">
+      ⚠ Hay {{ Object.keys(erroresTecnica).length }} campo(s) con errores. Revíselos antes de continuar.
     </div>
 
     <div class="form-botones">
@@ -331,6 +435,7 @@
   </div>
 
 </div>
+
 
 <!-- ══════════════ VISTA: ÉXITO (inspección técnica) ══════════════ -->
 <app-exito

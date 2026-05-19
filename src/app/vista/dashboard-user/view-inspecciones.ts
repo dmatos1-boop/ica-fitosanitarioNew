@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-view-inspecciones',
-  imports: [TablaInspeccion,RouterLink],
+  imports: [TablaInspeccion],
   templateUrl: './view-inspecciones.html',
   styleUrl: './view-inspecciones.css',
 })
