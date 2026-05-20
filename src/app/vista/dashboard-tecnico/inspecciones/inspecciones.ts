@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExitoComponent } from '../../exito/exito';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 interface Inspeccion {
   id:              number;
   codigo:          string;
   lugarProduccion: string;
   tipo:            'FITOSANITARIA' | 'TECNICA';
   fechaProgramada: string;
-  estado:          'Programada' | 'Realizada';
+  estado:          'Programada' | 'Realizada' | 'Cancelada' | 'Solicitada';
   productor:       string;
 }
 
@@ -42,47 +44,78 @@ interface ResultadoTecnico {
   templateUrl: './inspecciones.html',
   styleUrl: './inspecciones.css'
 })
-export class Misinspecciones {
+export class Misinspecciones implements OnInit {
   Object = Object;
+
+  private apiUrl = 'http://localhost:3000';
 
   vista: 'lista' | 'detalle' | 'form-fito' | 'form-tecnica' | 'resultado-fito' | 'exito' = 'lista';
   inspeccionSeleccionada: Inspeccion | null = null;
+  cargando = false;
+  error = '';
 
-  // ── Errores de validación por campo ───────────────────────
-  // Cada clave corresponde a un campo del formulario
   erroresFito: Record<string, string>    = {};
   erroresTecnica: Record<string, string> = {};
 
-  // ── Datos de prueba ────────────────────────────────────────
-  inspecciones: Inspeccion[] = [
-    { id: 1,
-      codigo: 'INS-001',
-      lugarProduccion: 'Invernadero Norte',
-      tipo: 'FITOSANITARIA',
-      fechaProgramada: '2026-04-20',
-      estado: 'Programada',
-      productor: 'Carlos Pérez'  
-    },
-    { id: 2,
-      codigo: 'INS-002',
-      lugarProduccion: 'Cultivo Sur',
-      tipo: 'TECNICA',
-      fechaProgramada: '2026-04-22',
-      estado: 'Programada',
-      productor: 'Ana Ruiz'
-    },
-    { id: 3,
-      codigo: 'INS-003',
-      lugarProduccion: 'Finca El Rosal',
-      tipo: 'FITOSANITARIA',
-      fechaProgramada: '2026-04-10',
-      estado: 'Realizada',
-      productor: 'María Castro'
-    },
-  ];
+  inspecciones: Inspeccion[] = [];
 
-  // ── Formulario fitosanitario ───────────────────────────────
   formFito: Omit<ResultadoFitosanitario, 'porcentajeInfestacion' | 'nivelAlerta'> = this.fitoVacio();
+  resultadoFito: ResultadoFitosanitario | null = null;
+  formTecnica: ResultadoTecnico = this.tecnicaVacio();
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('token') : '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
+
+  private getDocumentoTecnico(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.identificacion || '';
+      }
+    }
+    return '';
+  }
+
+  ngOnInit(): void {
+    this.cargarInspecciones();
+  }
+
+  cargarInspecciones(): void {
+    this.cargando = true;
+    const doc = this.getDocumentoTecnico();
+    this.http.get<any[]>(
+      `${this.apiUrl}/inspecciones/asignadas/${doc}`,
+      { headers: this.getHeaders() }
+    ).subscribe({
+      next: (data) => {
+        this.inspecciones = data.map((i: any) => ({
+          id: i.idOrden,
+          codigo: `INS-${String(i.idOrden).padStart(3, '0')}`,
+          lugarProduccion: i.lugarProduccion || i.nroRegICAlugar,
+          tipo: i.tipoInspeccion,
+          fechaProgramada: i.fechaProgramada ? i.fechaProgramada.split('T')[0] : '—',
+          estado: i.estado === 'PROGRAMADA' ? 'Programada' :
+                  i.estado === 'REALIZADA'  ? 'Realizada'  :
+                  i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Solicitada',
+          productor: i.nroDocFuncionario || '—'
+        }));
+        this.cargando = false;
+      },
+      error: () => {
+        this.error = 'Error al cargar inspecciones';
+        this.cargando = false;
+      }
+    });
+  }
 
   fitoVacio() {
     return {
@@ -95,11 +128,6 @@ export class Misinspecciones {
       comentarios:        ''
     };
   }
-
-  resultadoFito: ResultadoFitosanitario | null = null;
-
-  // ── Formulario técnico ─────────────────────────────────────
-  formTecnica: ResultadoTecnico = this.tecnicaVacio();
 
   tecnicaVacio(): ResultadoTecnico {
     return {
@@ -114,8 +142,6 @@ export class Misinspecciones {
     };
   }
 
-  // ── Navegación ─────────────────────────────────────────────
-
   verDetalle(ins: Inspeccion): void {
     this.inspeccionSeleccionada = ins;
     this.vista = 'detalle';
@@ -123,9 +149,8 @@ export class Misinspecciones {
 
   realizarInspeccion(ins: Inspeccion): void {
     this.inspeccionSeleccionada = ins;
-    this.erroresFito   = {};
+    this.erroresFito    = {};
     this.erroresTecnica = {};
-
     if (ins.tipo === 'FITOSANITARIA') {
       this.formFito = this.fitoVacio();
       this.vista    = 'form-fito';
@@ -135,97 +160,105 @@ export class Misinspecciones {
     }
   }
 
-  // ── Validación fitosanitario ───────────────────────────────
-  // Retorna true si el formulario es válido, false si tiene errores
   validarFito(): boolean {
     this.erroresFito = {};
-
     if (!this.formFito.estadoFenologico.trim())
       this.erroresFito['estadoFenologico'] = 'El estado fenológico es obligatorio.';
-
     if (!this.formFito.areaInspeccionada || this.formFito.areaInspeccionada <= 0)
       this.erroresFito['areaInspeccionada'] = 'El área debe ser mayor a 0.';
-
     if (!this.formFito.totalPlantas || this.formFito.totalPlantas <= 0)
       this.erroresFito['totalPlantas'] = 'La cantidad total de plantas debe ser mayor a 0.';
-
     if (this.formFito.plantasAfectadas < 0)
       this.erroresFito['plantasAfectadas'] = 'No puede ser un valor negativo.';
-
     if (this.formFito.plantasAfectadas > this.formFito.totalPlantas)
       this.erroresFito['plantasAfectadas'] = 'No puede superar el total de plantas.';
-
     if (!this.formFito.cantidadProyectada || this.formFito.cantidadProyectada <= 0)
       this.erroresFito['cantidadProyectada'] = 'La cantidad proyectada debe ser mayor a 0.';
-
     if (!this.formFito.cantidadCosechada || this.formFito.cantidadCosechada <= 0)
       this.erroresFito['cantidadCosechada'] = 'La cantidad cosechada debe ser mayor a 0.';
-
-    // Retorna true si no hay ningún error
     return Object.keys(this.erroresFito).length === 0;
   }
 
-  // ── Validación técnica ─────────────────────────────────────
   validarTecnica(): boolean {
     this.erroresTecnica = {};
-
     if (!this.formTecnica.areaAcopio || this.formTecnica.areaAcopio <= 0)
       this.erroresTecnica['areaAcopio'] = 'El área de acopio debe ser mayor a 0.';
-
     if (!this.formTecnica.areaResiduosVegetales || this.formTecnica.areaResiduosVegetales <= 0)
       this.erroresTecnica['areaResiduosVegetales'] = 'El área de residuos vegetales debe ser mayor a 0.';
-
     if (!this.formTecnica.areaAlmacenamiento || this.formTecnica.areaAlmacenamiento <= 0)
       this.erroresTecnica['areaAlmacenamiento'] = 'El área de almacenamiento debe ser mayor a 0.';
-
     if (!this.formTecnica.areaDosificacion || this.formTecnica.areaDosificacion <= 0)
       this.erroresTecnica['areaDosificacion'] = 'El área de dosificación debe ser mayor a 0.';
-
     if (!this.formTecnica.areaResiduosMezclas || this.formTecnica.areaResiduosMezclas <= 0)
       this.erroresTecnica['areaResiduosMezclas'] = 'El área de residuos de mezclas debe ser mayor a 0.';
-
     if (!this.formTecnica.areaHerramientas || this.formTecnica.areaHerramientas <= 0)
       this.erroresTecnica['areaHerramientas'] = 'El área de herramientas debe ser mayor a 0.';
-
     if (!this.formTecnica.areaSanitaria || this.formTecnica.areaSanitaria <= 0)
       this.erroresTecnica['areaSanitaria'] = 'El área sanitaria debe ser mayor a 0.';
-
     return Object.keys(this.erroresTecnica).length === 0;
   }
 
-  // ── Guardar fitosanitario ──────────────────────────────────
   guardarFito(): void {
-    // Detiene el guardado si hay errores
     if (!this.validarFito()) return;
+    if (!this.inspeccionSeleccionada) return;
 
-    const porcentaje = (this.formFito.plantasAfectadas / this.formFito.totalPlantas) * 100;
-
-    let nivel: 'BAJO' | 'MEDIO' | 'ALTO';
-    if (porcentaje <= 20)      nivel = 'BAJO';
-    else if (porcentaje <= 60) nivel = 'MEDIO';
-    else                       nivel = 'ALTO';
-
-    this.resultadoFito = {
-      ...this.formFito,
-      porcentajeInfestacion: Math.round(porcentaje * 100) / 100,
-      nivelAlerta:           nivel
-    };
-
-    if (this.inspeccionSeleccionada)
-      this.inspeccionSeleccionada.estado = 'Realizada';
-
-    this.vista = 'resultado-fito';
+    this.http.post(
+      `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/fitosanitaria`,
+      {
+        estadoFenologico:    this.formFito.estadoFenologico,
+        areaInspeccionada:   this.formFito.areaInspeccionada,
+        cantidadPlantas:     this.formFito.totalPlantas,
+        plantasAfectadas:    this.formFito.plantasAfectadas,
+        cantidadProyectada:  this.formFito.cantidadProyectada,
+        cantidadReal:        this.formFito.cantidadCosechada,
+        comentarios:         this.formFito.comentarios
+      },
+      { headers: this.getHeaders() }
+    ).subscribe({
+      next: (res: any) => {
+        const porcentaje = (this.formFito.plantasAfectadas / this.formFito.totalPlantas) * 100;
+        this.resultadoFito = {
+          ...this.formFito,
+          porcentajeInfestacion: Math.round(porcentaje * 100) / 100,
+          nivelAlerta: res.nivelAlerta || (porcentaje > 30 ? 'ALTO' : porcentaje > 10 ? 'MEDIO' : 'BAJO')
+        };
+        if (this.inspeccionSeleccionada)
+          this.inspeccionSeleccionada.estado = 'Realizada';
+        this.vista = 'resultado-fito';
+      },
+      error: () => { this.error = 'Error al guardar la inspección fitosanitaria'; }
+    });
   }
 
-  // ── Guardar técnico ────────────────────────────────────────
   guardarTecnica(): void {
     if (!this.validarTecnica()) return;
+    if (!this.inspeccionSeleccionada) return;
 
-    if (this.inspeccionSeleccionada)
-      this.inspeccionSeleccionada.estado = 'Realizada';
-
-    this.vista = 'exito';
+    this.http.post(
+      `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/tecnica`,
+      {
+        areaAcopio:               this.formTecnica.areaAcopio,
+        areaResiduosVegetales:    this.formTecnica.areaResiduosVegetales,
+        areaAlmacenamientoInsumos: this.formTecnica.areaAlmacenamiento,
+        areaDosificacion:         this.formTecnica.areaDosificacion,
+        areaResiduosMezclas:      this.formTecnica.areaResiduosMezclas,
+        areaHerramientas:         this.formTecnica.areaHerramientas,
+        areaSanitaria:            this.formTecnica.areaSanitaria,
+        comentarios:              this.formTecnica.comentarios
+      },
+      { headers: this.getHeaders() }
+    ).subscribe({
+      next: () => {
+        if (this.inspeccionSeleccionada)
+          this.inspeccionSeleccionada.estado = 'Realizada';
+        this.vista = 'exito';
+      },
+      error: () => { this.error = 'Error al guardar la inspección técnica'; }
+    });
   }
 
-  volver(): void { this.vista = 'lista'; }
+  volver(): void {
+    this.vista = 'lista';
+    this.cargarInspecciones();
+  }
 }

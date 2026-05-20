@@ -1,3 +1,6 @@
+
+import { Incio } from './vista/dashboard-tecnico/incio/incio';
+import { Misinspecciones } from './vista/dashboard-tecnico/inspecciones/inspecciones';
 import { Routes } from '@angular/router';
 import { LoginComponent } from './vista/login/login';
 import { DashboardAdminComponent } from './vista/dashboard-admin/dashboard-admin';
@@ -45,8 +48,15 @@ export const routes: Routes = [
     ]
    },
 
-  { path: 'tecnico', component: DashboardTecnicoComponent },
-
+{ path: 'tecnico', component: DashboardTecnicoComponent,
+  children: [
+    { path: 'inicio', component: Incio },
+    { path: 'asignaciones', component: Misinspecciones },
+    { path: 'visitas', component: Misinspecciones },
+    { path: 'reportes', component: Misinspecciones },
+    { path: '', redirectTo: 'inicio', pathMatch: 'full' }
+  ]
+},
   { path: 'usuario', component: DashboardUserComponent,
     children:[
       { path: 'inicio', component: ViewInicio },// pagina de inicio dashboard

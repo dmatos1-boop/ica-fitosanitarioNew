@@ -178,3 +178,9 @@
   margin-bottom: 1rem;
   border-left: 4px solid #dc3545;
 }
+
+/* ── Badges de estado ── */
+.badge-programada  { background: #cfe2ff; color: #084298; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+.badge-realizada   { background: #d1e7dd; color: #0a3622; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+.badge-cancelada   { background: #f8d7da; color: #842029; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+.badge-solicitada  { background: #fff3cd; color: #856404; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }

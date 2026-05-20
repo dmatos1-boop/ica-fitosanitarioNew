@@ -34,8 +34,9 @@ export class SidebarComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.rol = (localStorage.getItem('userRole') ?? '').toUpperCase();
       
-      this.menuItems = this.menuService.getMenu(this.rol);
-    }
+const rolKey = this.rol.toLowerCase().includes('funcionario') ? 'admin' :
+               this.rol.toLowerCase().includes('tecnico') ? 'tecnico' : 'productor';
+this.menuItems = this.menuService.getMenu(rolKey);    }
   }
 
   cerrarSesion(): void {
