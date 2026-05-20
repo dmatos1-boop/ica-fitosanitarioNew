@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExitoComponent } from '../../exito/exito';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
 interface Inspeccion {
   id:              number;
@@ -48,6 +49,7 @@ export class Misinspecciones implements OnInit {
   Object = Object;
 
   private apiUrl = 'http://localhost:3000';
+  filtroEstado = 'todos';
 
   vista: 'lista' | 'detalle' | 'form-fito' | 'form-tecnica' | 'resultado-fito' | 'exito' = 'lista';
   inspeccionSeleccionada: Inspeccion | null = null;
@@ -65,6 +67,7 @@ export class Misinspecciones implements OnInit {
 
   constructor(
     private http: HttpClient,
+    private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -86,6 +89,7 @@ export class Misinspecciones implements OnInit {
   }
 
   ngOnInit(): void {
+    this.filtroEstado = this.route.snapshot.data['filtro'] || 'todos';
     this.cargarInspecciones();
   }
 
@@ -97,17 +101,23 @@ export class Misinspecciones implements OnInit {
       { headers: this.getHeaders() }
     ).subscribe({
       next: (data) => {
-        this.inspecciones = data.map((i: any) => ({
-          id: i.idOrden,
-          codigo: `INS-${String(i.idOrden).padStart(3, '0')}`,
-          lugarProduccion: i.lugarProduccion || i.nroRegICAlugar,
-          tipo: i.tipoInspeccion,
-          fechaProgramada: i.fechaProgramada ? i.fechaProgramada.split('T')[0] : '—',
-          estado: i.estado === 'PROGRAMADA' ? 'Programada' :
-                  i.estado === 'REALIZADA'  ? 'Realizada'  :
-                  i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Solicitada',
-          productor: i.nroDocFuncionario || '—'
-        }));
+        this.inspecciones = data
+          .filter((i: any) => {
+            if (this.filtroEstado === 'programadas') return i.estado === 'PROGRAMADA';
+            if (this.filtroEstado === 'realizadas')  return i.estado === 'REALIZADA';
+            return true;
+          })
+          .map((i: any) => ({
+            id: i.idOrden,
+            codigo: `INS-${String(i.idOrden).padStart(3, '0')}`,
+            lugarProduccion: i.lugarProduccion || i.nroRegICAlugar,
+            tipo: i.tipoInspeccion,
+            fechaProgramada: i.fechaProgramada ? i.fechaProgramada.split('T')[0] : '—',
+            estado: i.estado === 'PROGRAMADA' ? 'Programada' :
+                    i.estado === 'REALIZADA'  ? 'Realizada'  :
+                    i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Solicitada',
+            productor: i.nroDocFuncionario || '—'
+          }));
         this.cargando = false;
       },
       error: () => {
@@ -205,13 +215,13 @@ export class Misinspecciones implements OnInit {
     this.http.post(
       `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/fitosanitaria`,
       {
-        estadoFenologico:    this.formFito.estadoFenologico,
-        areaInspeccionada:   this.formFito.areaInspeccionada,
-        cantidadPlantas:     this.formFito.totalPlantas,
-        plantasAfectadas:    this.formFito.plantasAfectadas,
-        cantidadProyectada:  this.formFito.cantidadProyectada,
-        cantidadReal:        this.formFito.cantidadCosechada,
-        comentarios:         this.formFito.comentarios
+        estadoFenologico:   this.formFito.estadoFenologico,
+        areaInspeccionada:  this.formFito.areaInspeccionada,
+        cantidadPlantas:    this.formFito.totalPlantas,
+        plantasAfectadas:   this.formFito.plantasAfectadas,
+        cantidadProyectada: this.formFito.cantidadProyectada,
+        cantidadReal:       this.formFito.cantidadCosechada,
+        comentarios:        this.formFito.comentarios
       },
       { headers: this.getHeaders() }
     ).subscribe({
@@ -237,14 +247,14 @@ export class Misinspecciones implements OnInit {
     this.http.post(
       `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/tecnica`,
       {
-        areaAcopio:               this.formTecnica.areaAcopio,
-        areaResiduosVegetales:    this.formTecnica.areaResiduosVegetales,
+        areaAcopio:                this.formTecnica.areaAcopio,
+        areaResiduosVegetales:     this.formTecnica.areaResiduosVegetales,
         areaAlmacenamientoInsumos: this.formTecnica.areaAlmacenamiento,
-        areaDosificacion:         this.formTecnica.areaDosificacion,
-        areaResiduosMezclas:      this.formTecnica.areaResiduosMezclas,
-        areaHerramientas:         this.formTecnica.areaHerramientas,
-        areaSanitaria:            this.formTecnica.areaSanitaria,
-        comentarios:              this.formTecnica.comentarios
+        areaDosificacion:          this.formTecnica.areaDosificacion,
+        areaResiduosMezclas:       this.formTecnica.areaResiduosMezclas,
+        areaHerramientas:          this.formTecnica.areaHerramientas,
+        areaSanitaria:             this.formTecnica.areaSanitaria,
+        comentarios:               this.formTecnica.comentarios
       },
       { headers: this.getHeaders() }
     ).subscribe({
