@@ -1,8 +1,7 @@
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-// Modelo de la próxima inspección que se muestra en la tarjeta
 interface ProximaInspeccion {
   codigo:          string;
   lugarProduccion: string;
@@ -10,61 +9,107 @@ interface ProximaInspeccion {
   hora:            string;
 }
 
-// Modelo de cada tarjeta de resumen
 interface TarjetaInspeccion {
-  tipo:             'FITOSANITARIA' | 'TECNICA';
-  total:            number;          // cuántas tiene programadas
-  proxima:          ProximaInspeccion | null; // la más cercana
+  tipo:    'FITOSANITARIA' | 'TECNICA';
+  total:   number;
+  proxima: ProximaInspeccion | null;
 }
 
 @Component({
   selector: 'app-incio',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './incio.html',
   styleUrl: './incio.css',
 })
-export class Incio {
+export class Incio implements OnInit {
 
-    // Nombre del técnico — luego vendrá del servicio de autenticación
-  nombreTecnico = 'Seul Salino';
+  private apiUrl = 'http://localhost:3000';
 
-  // Fecha actual para el saludo dinámico
+  nombreTecnico = '';
   fechaActual: Date = new Date();
 
-  // ── Tarjeta de inspecciones TÉCNICAS 
   tecnicas: TarjetaInspeccion = {
-    tipo:  'TECNICA',
-    total: 3,
-    proxima: {
-      codigo:'INS-002',
-      lugarProduccion: 'Cultivo Sur',
-      fecha:'2026-04-22',
-      hora:'09:00 AM'
-    }
+    tipo: 'TECNICA', total: 0, proxima: null
   };
 
-  // ── Tarjeta de inspecciones FITOSANITARIAS 
   fitosanitarias: TarjetaInspeccion = {
-    tipo:  'FITOSANITARIA',
-    total: 2,
-    proxima: {
-      codigo: 'INS-001',
-      lugarProduccion: 'Invernadero Norte',
-      fecha: '2026-04-20',
-      hora: '07:30 AM'
-    }
+    tipo: 'FITOSANITARIA', total: 0, proxima: null
   };
 
-  // ── Saludo dinámico según la hora del día 
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('token') : '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
+
+  private getDocumentoTecnico(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.identificacion || '';
+      }
+    }
+    return '';
+  }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.nombreTecnico = localStorage.getItem('nombre') || 'Técnico';
+    }
+    this.cargarInspecciones();
+  }
+
+  cargarInspecciones(): void {
+    const doc = this.getDocumentoTecnico();
+    this.http.get<any[]>(
+      `${this.apiUrl}/inspecciones/asignadas/${doc}`,
+      { headers: this.getHeaders() }
+    ).subscribe({
+      next: (data) => {
+        const programadas = data.filter(i => i.estado === 'PROGRAMADA');
+
+        const tecnicas = programadas.filter(i => i.tipoInspeccion === 'TECNICA');
+        const fitos = programadas.filter(i => i.tipoInspeccion === 'FITOSANITARIA');
+
+        this.tecnicas = {
+          tipo: 'TECNICA',
+          total: tecnicas.length,
+          proxima: tecnicas.length > 0 ? {
+            codigo: `INS-${String(tecnicas[0].idOrden).padStart(3, '0')}`,
+            lugarProduccion: tecnicas[0].lugarProduccion || tecnicas[0].nroRegICAlugar,
+            fecha: tecnicas[0].fechaProgramada ? tecnicas[0].fechaProgramada.split('T')[0] : '—',
+            hora: '08:00 AM'
+          } : null
+        };
+
+        this.fitosanitarias = {
+          tipo: 'FITOSANITARIA',
+          total: fitos.length,
+          proxima: fitos.length > 0 ? {
+            codigo: `INS-${String(fitos[0].idOrden).padStart(3, '0')}`,
+            lugarProduccion: fitos[0].lugarProduccion || fitos[0].nroRegICAlugar,
+            fecha: fitos[0].fechaProgramada ? fitos[0].fechaProgramada.split('T')[0] : '—',
+            hora: '08:00 AM'
+          } : null
+        };
+      },
+      error: () => {
+        this.nombreTecnico = localStorage.getItem('nombre') || 'Técnico';
+      }
+    });
+  }
+
   get saludo(): string {
     const hora = this.fechaActual.getHours();
     if (hora < 12)  return 'Buenos días';
     if (hora < 18)  return 'Buenas tardes';
     return 'Buenas noches';
   }
-
 }
-
-
-
-
