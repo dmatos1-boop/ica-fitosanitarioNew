@@ -47,7 +47,7 @@ export const routes: Routes = [
     children:[
       {path: 'inicio', component:Incio},
       {path: 'inspecciones', component: Misinspecciones},
-      { path: '', redirectTo: 'inspecciones', pathMatch: 'full' }
+      { path: '', redirectTo: 'inicio', pathMatch: 'full' }
     ]
   },
 
