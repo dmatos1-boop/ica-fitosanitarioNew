@@ -1,1 +1,24 @@
-<p>dashboard-tecnico works!</p>
+<div class="dashboard-container">
+
+ <app-sidebar></app-sidebar>
+
+
+
+
+
+<div class="main-content">
+  <nav class="navbar"><!--CREAMOS UN NAVBAR ESTETICO INDICANDO LA FECHA ACTUAL-->
+  <div class="logo">ASOHOFRUCOL</div>
+
+  <div class="fecha">
+    {{ fechaActual | date:'fullDate' }}<!--ESTAMOS LLAMANDO LA FUNCION-->
+  </div>
+</nav>
+
+
+  <router-outlet></router-outlet>
+
+
+</div>
+</div>
+

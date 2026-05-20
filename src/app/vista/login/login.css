@@ -6,7 +6,6 @@
     height: 100vh;
     width: 100%;
     padding: 0 8%;
-
     background: url('../../imagenes/terreno.jpg') no-repeat center center; /*imagen de fondo*/
     background-size: cover;
     
@@ -130,15 +129,4 @@
     .login-card {
         padding: 35px 25px;
     }
-}
-
-.mensaje-error {
-  background-color: #fdecea;
-  color: #c0392b;
-  border: 1px solid #e74c3c;
-  border-radius: 6px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-  text-align: center;
 }

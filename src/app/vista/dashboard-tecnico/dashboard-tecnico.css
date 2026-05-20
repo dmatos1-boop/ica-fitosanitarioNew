@@ -1,0 +1,68 @@
+    
+
+.dashboard-container{
+    /*caja que estiliza todo el dashboard*/
+
+display:flex;
+min-height: 100vh;
+width: 100%;
+
+
+
+}
+
+
+
+/*NAVBAR FECHA*/
+.navbar{
+    display: flex;
+    position: fixed;
+    
+    border-bottom: 1px solid #e2ebe5;
+    top: 0;
+    width: 100%;
+    left: 0;
+    justify-content: space-around;
+    height: 50px;
+    z-index: 500;
+    background: #f4f8f5;
+
+}
+
+.logo {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase; /*para que este en mayuscula en caso de que no */
+    color: var(--verde-botones); 
+
+}
+
+.fecha {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: gray;
+  
+}
+
+/* CONTENIDO DERECHO */
+
+.main-content{
+margin-top: 30px;
+flex:1;
+position: relative;
+background:#f5f5f5;
+padding:40px;
+width: 100%;
+overflow-y: auto;
+}
+
+.main-content h1{
+
+color:var(--titulos);   
+
+}
+
+

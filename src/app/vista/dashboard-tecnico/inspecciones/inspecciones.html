@@ -1,0 +1,445 @@
+<!-- ══════════════ VISTA: LISTA ══════════════ -->
+<div *ngIf="vista === 'lista'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Mis Inspecciones</h2>
+  </div>
+
+  <!-- Mensaje si no tiene inspecciones asignadas -->
+  <div *ngIf="inspecciones.length === 0" class="sin-inspecciones">
+    <span class="sin-icon">📋</span>
+    <p>No tiene inspecciones asignadas por el momento.</p>
+  </div>
+
+  <!-- Tabla de inspecciones -->
+  <table *ngIf="inspecciones.length > 0" class="tabla">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Lugar de Producción</th>
+        <th>Tipo</th>
+        <th>Fecha Programada</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ins of inspecciones">
+        <td>{{ ins.codigo }}</td>
+        <td>{{ ins.lugarProduccion }}</td>
+        <td>
+          <!-- Badge de tipo de inspección -->
+          <span [class]="'badge-tipo badge-tipo-' + ins.tipo.toLowerCase()">
+            {{ ins.tipo }}
+          </span>
+        </td>
+        <td>{{ ins.fechaProgramada }}</td>
+        <td>
+          <span [class]="'badge badge-' + ins.estado.toLowerCase()">
+            {{ ins.estado }}
+          </span>
+        </td>
+        <td class="acciones">
+
+          <!-- Programada: puede ver detalle y realizar la inspección -->
+          <ng-container *ngIf="ins.estado === 'Programada'">
+            <button class="btn-detalle"  (click)="verDetalle(ins)">
+              Ver detalle
+            </button>
+            <button class="btn-realizar" (click)="realizarInspeccion(ins)">
+              Realizar inspección
+            </button>
+          </ng-container>
+
+          <!-- Realizada: solo puede ver detalle -->
+          <button
+            *ngIf="ins.estado === 'Realizada'"
+            class="btn-detalle"
+            (click)="verDetalle(ins)">
+            Ver detalle
+          </button>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ══════════════ VISTA: DETALLE ══════════════ -->
+<div *ngIf="vista === 'detalle'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Detalle de Inspección</h2>
+  </div>
+
+  <div class="detalle-card">
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Código</span>
+      <span>{{ inspeccionSeleccionada?.codigo }}</span>
+    </div>
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Lugar de Producción</span>
+      <span>{{ inspeccionSeleccionada?.lugarProduccion }}</span>
+    </div>
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Tipo</span>
+      <span [class]="'badge-tipo badge-tipo-' + inspeccionSeleccionada?.tipo?.toLowerCase()">
+        {{ inspeccionSeleccionada?.tipo }}
+      </span>
+    </div>
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Fecha Programada</span>
+      <span>{{ inspeccionSeleccionada?.fechaProgramada }}</span>
+    </div>
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Estado</span>
+      <span [class]="'badge badge-' + inspeccionSeleccionada?.estado?.toLowerCase()">
+        {{ inspeccionSeleccionada?.estado }}
+      </span>
+    </div>
+
+    <div class="detalle-fila">
+      <span class="detalle-label">Productor Asociado</span>
+      <span>{{ inspeccionSeleccionada?.productor }}</span>
+    </div>
+
+    <div class="form-botones" style="margin-top: 1.5rem;">
+      <button class="btn-volver" (click)="volver()">Volver al listado</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════════ VISTA: FORMULARIO FITOSANITARIO ══════════════ -->
+<div *ngIf="vista === 'form-fito'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Realizar Inspección Fitosanitaria</h2>
+  </div>
+
+  <div class="info-inspeccion">
+    <span>{{ inspeccionSeleccionada?.codigo }}</span>
+    <span>—</span>
+    <span>{{ inspeccionSeleccionada?.lugarProduccion }}</span>
+    <span>—</span>
+    <span>{{ inspeccionSeleccionada?.fechaProgramada }}</span>
+  </div>
+
+  <div class="formulario">
+
+    <!-- Estado fenológico -->
+    <div class="campo">
+      <label>Estado fenológico del cultivo</label>
+      <input
+        type="text"
+        [(ngModel)]="formFito.estadoFenologico"
+        placeholder="Ej: Floración, Fructificación, Vegetativo..."
+        [class.campo-error]="erroresFito['estadoFenologico']"/>
+      <!-- Mensaje de error debajo del campo -->
+      <span *ngIf="erroresFito['estadoFenologico']" class="mensaje-error">
+        ⚠ {{ erroresFito['estadoFenologico'] }}
+      </span>
+    </div>
+
+    <!-- Área inspeccionada -->
+    <div class="campo">
+      <label>Área inspeccionada (hectáreas)</label>
+      <input
+        type="number"
+        [(ngModel)]="formFito.areaInspeccionada"
+        min="0"
+        [class.campo-error]="erroresFito['areaInspeccionada']"/>
+      <span *ngIf="erroresFito['areaInspeccionada']" class="mensaje-error">
+        ⚠ {{ erroresFito['areaInspeccionada'] }}
+      </span>
+    </div>
+
+    <!-- Total y afectadas en dos columnas -->
+    <div class="campos-dobles">
+      <div class="campo">
+        <label>Cantidad total de plantas</label>
+        <input
+          type="number"
+          [(ngModel)]="formFito.totalPlantas"
+          min="0"
+          [class.campo-error]="erroresFito['totalPlantas']"/>
+        <span *ngIf="erroresFito['totalPlantas']" class="mensaje-error">
+          ⚠ {{ erroresFito['totalPlantas'] }}
+        </span>
+      </div>
+      <div class="campo">
+        <label>Cantidad de plantas afectadas</label>
+        <input
+          type="number"
+          [(ngModel)]="formFito.plantasAfectadas"
+          min="0"
+          [class.campo-error]="erroresFito['plantasAfectadas']"/>
+        <span *ngIf="erroresFito['plantasAfectadas']" class="mensaje-error">
+          ⚠ {{ erroresFito['plantasAfectadas'] }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Proyectada y cosechada -->
+    <div class="campos-dobles">
+      <div class="campo">
+        <label>Cantidad proyectada</label>
+        <input
+          type="number"
+          [(ngModel)]="formFito.cantidadProyectada"
+          min="0"
+          [class.campo-error]="erroresFito['cantidadProyectada']"/>
+        <span *ngIf="erroresFito['cantidadProyectada']" class="mensaje-error">
+          ⚠ {{ erroresFito['cantidadProyectada'] }}
+        </span>
+      </div>
+      <div class="campo">
+        <label>Cantidad real cosechada</label>
+        <input
+          type="number"
+          [(ngModel)]="formFito.cantidadCosechada"
+          min="0"
+          [class.campo-error]="erroresFito['cantidadCosechada']"/>
+        <span *ngIf="erroresFito['cantidadCosechada']" class="mensaje-error">
+          ⚠ {{ erroresFito['cantidadCosechada'] }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Preview del cálculo en tiempo real -->
+    <div class="calculo-preview" *ngIf="formFito.totalPlantas > 0">
+      <span>Porcentaje de infestación estimado:</span>
+      <strong>
+        {{ ((formFito.plantasAfectadas / formFito.totalPlantas) * 100) | number:'1.2-2' }}%
+      </strong>
+    </div>
+
+    <!-- Comentarios — opcional, sin validación -->
+    <div class="campo">
+      <label>Comentarios <span class="opcional">(opcional)</span></label>
+      <textarea
+        [(ngModel)]="formFito.comentarios"
+        rows="4"
+        placeholder="Observaciones adicionales...">
+      </textarea>
+    </div>
+
+    <!-- Resumen de errores al tope si hay varios -->
+    <div *ngIf="Object.keys(erroresFito).length > 0" class="resumen-errores">
+      ⚠ Hay {{ Object.keys(erroresFito).length }} campo(s) con errores. Revíselos antes de continuar.
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar"  (click)="guardarFito()">Guardar inspección</button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+
+
+</div>
+
+<!-- ══════════════ VISTA: RESULTADO FITOSANITARIO ══════════════ -->
+<div *ngIf="vista === 'resultado-fito'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Resultado de Inspección Fitosanitaria</h2>
+  </div>
+
+  <div class="resultado-card" *ngIf="resultadoFito">
+
+    <!-- Nivel de alerta con color según severidad -->
+    <div [class]="'nivel-alerta nivel-' + resultadoFito.nivelAlerta.toLowerCase()">
+      <span class="nivel-icono">
+        {{ resultadoFito.nivelAlerta === 'BAJO'  ? '🟢' :
+           resultadoFito.nivelAlerta === 'MEDIO' ? '🟡' : '🔴' }}
+      </span>
+      <div>
+        <p class="nivel-label">Nivel de alerta</p>
+        <p class="nivel-valor">{{ resultadoFito.nivelAlerta }}</p>
+      </div>
+    </div>
+
+    <!-- Porcentaje calculado -->
+    <div class="resultado-porcentaje">
+      <span class="porcentaje-label">Porcentaje de infestación</span>
+      <span class="porcentaje-valor">{{ resultadoFito.porcentajeInfestacion }}%</span>
+    </div>
+
+    <!-- Resumen de los datos ingresados -->
+    <div class="resultado-resumen">
+      <div class="detalle-fila">
+        <span class="detalle-label">Total de plantas</span>
+        <span>{{ resultadoFito.totalPlantas }}</span>
+      </div>
+      <div class="detalle-fila">
+        <span class="detalle-label">Plantas afectadas</span>
+        <span>{{ resultadoFito.plantasAfectadas }}</span>
+      </div>
+      <div class="detalle-fila">
+        <span class="detalle-label">Área inspeccionada</span>
+        <span>{{ resultadoFito.areaInspeccionada }} ha</span>
+      </div>
+      <div class="detalle-fila">
+        <span class="detalle-label">Estado fenológico</span>
+        <span>{{ resultadoFito.estadoFenologico }}</span>
+      </div>
+      <div class="detalle-fila" *ngIf="resultadoFito.comentarios">
+        <span class="detalle-label">Comentarios</span>
+        <span>{{ resultadoFito.comentarios }}</span>
+      </div>
+    </div>
+
+    <div class="form-botones" style="margin-top: 1.5rem;">
+      <button class="btn-volver" (click)="volver()">Volver al listado</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════════ VISTA: FORMULARIO TÉCNICO ══════════════ -->
+<div *ngIf="vista === 'form-tecnica'" class="modulo-container">
+
+  <div class="modulo-header">
+    <h2>Realizar Inspección Técnica</h2>
+  </div>
+
+  <div class="info-inspeccion">
+    <span>{{ inspeccionSeleccionada?.codigo }}</span>
+    <span>—</span>
+    <span>{{ inspeccionSeleccionada?.lugarProduccion }}</span>
+    <span>—</span>
+    <span>{{ inspeccionSeleccionada?.fechaProgramada }}</span>
+  </div>
+
+  <div class="formulario">
+
+    <p class="seccion-titulo">Áreas de la instalación (m²)</p>
+
+    <div class="campos-dobles">
+      <div class="campo">
+        <label>Área de acopio</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaAcopio"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaAcopio']"/>
+        <span *ngIf="erroresTecnica['areaAcopio']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaAcopio'] }}
+        </span>
+      </div>
+      <div class="campo">
+        <label>Área de residuos vegetales</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaResiduosVegetales"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaResiduosVegetales']"/>
+        <span *ngIf="erroresTecnica['areaResiduosVegetales']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaResiduosVegetales'] }}
+        </span>
+      </div>
+    </div>
+
+    <div class="campos-dobles">
+      <div class="campo">
+        <label>Área de almacenamiento de insumos</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaAlmacenamiento"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaAlmacenamiento']"/>
+        <span *ngIf="erroresTecnica['areaAlmacenamiento']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaAlmacenamiento'] }}
+        </span>
+      </div>
+      <div class="campo">
+        <label>Área de dosificación</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaDosificacion"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaDosificacion']"/>
+        <span *ngIf="erroresTecnica['areaDosificacion']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaDosificacion'] }}
+        </span>
+      </div>
+    </div>
+
+    <div class="campos-dobles">
+      <div class="campo">
+        <label>Área de residuos de mezclas</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaResiduosMezclas"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaResiduosMezclas']"/>
+        <span *ngIf="erroresTecnica['areaResiduosMezclas']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaResiduosMezclas'] }}
+        </span>
+      </div>
+      <div class="campo">
+        <label>Área de herramientas</label>
+        <input
+          type="number"
+          [(ngModel)]="formTecnica.areaHerramientas"
+          min="0"
+          [class.campo-error]="erroresTecnica['areaHerramientas']"/>
+        <span *ngIf="erroresTecnica['areaHerramientas']" class="mensaje-error">
+          ⚠ {{ erroresTecnica['areaHerramientas'] }}
+        </span>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Área sanitaria</label>
+      <input
+        type="number"
+        [(ngModel)]="formTecnica.areaSanitaria"
+        min="0"
+        [class.campo-error]="erroresTecnica['areaSanitaria']"/>
+      <span *ngIf="erroresTecnica['areaSanitaria']" class="mensaje-error">
+        ⚠ {{ erroresTecnica['areaSanitaria'] }}
+      </span>
+    </div>
+
+    <!-- Comentarios — opcional -->
+    <div class="campo">
+      <label>Comentarios <span class="opcional">(opcional)</span></label>
+      <textarea
+        [(ngModel)]="formTecnica.comentarios"
+        rows="4"
+        placeholder="Observaciones adicionales...">
+      </textarea>
+    </div>
+
+    <!-- Resumen de errores -->
+    <div *ngIf="Object.keys(erroresTecnica).length > 0" class="resumen-errores">
+      ⚠ Hay {{ Object.keys(erroresTecnica).length }} campo(s) con errores. Revíselos antes de continuar.
+    </div>
+
+    <div class="form-botones">
+      <button class="btn-guardar"  (click)="guardarTecnica()">Guardar inspección</button>
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ══════════════ VISTA: ÉXITO (inspección técnica) ══════════════ -->
+<app-exito
+  *ngIf="vista === 'exito'"
+  mensaje="La inspección técnica ha sido registrada correctamente."
+  (volver)="volver()">
+</app-exito>

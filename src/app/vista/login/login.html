@@ -1,32 +1,46 @@
 <div class="login-container">
+
+  <!-- Card del Login (a la derecha) -->
   <div class="login-card">
+
+    <!-- Título principal -->
 
     <h2 class="titulo">Iniciar Sesión</h2>
     <p class="subtitulo">Bienvenido, ingresa tus datos</p>
+    
 
-    <div class="campo-grupo">
-      <label>Correo electrónico</label>
-      <input
-        type="text"
-        placeholder="Ingresar correo"
-        [(ngModel)]="usuario"
-      >
-    </div>
+  <form class="log"  (ngSubmit)="login()" #loginForm="ngForm"> <!--mejor funcionalidad para el usuario, ya que solo con enter entra o click-->
+    
+      <div class="campo-grupo">
+        <label for="usuario">Correo electrónico</label>
+        <input
+          id="usuario"
+          name="usuario"
+          type="email , submit"
+          placeholder="Ingresar correo"
+          [(ngModel)]="usuario"
+          required
+        >
+      </div>
 
-    <div class="campo-grupo">
-      <label>Contraseña</label>
-      <input
-        type="password"
-        placeholder="Ingresar contraseña"
-        [(ngModel)]="password"
-      >
-    </div>
+      <div class="campo-grupo">
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Ingresar contraseña"
+          [(ngModel)]="password"
+        >
+      </div>
 
-    <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+      <a href="#" class="olvido-password">¿Olvidaste tu contraseña?</a>
 
-    <button class="btn-ingreso" (click)="login()" [disabled]="cargando">
-      {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+    <button type="submit" class="btn-ingreso  ">
+      Ingresar
     </button>
 
+  </form>
   </div>
+
 </div>

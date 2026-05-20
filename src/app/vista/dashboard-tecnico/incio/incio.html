@@ -1,0 +1,106 @@
+<div class="inicio-container">
+
+  <!-- ── Encabezado de bienvenida ── -->
+  <div class="inicio-header">
+    <div class="bienvenida">
+      <h2>{{ saludo }}, {{ nombreTecnico }}</h2>
+    </div>
+  
+  </div>
+
+  <!-- ── Subtítulo ── -->
+  <p class="subtitulo">Aquí tienes un resumen de tus inspecciones programadas</p>
+
+  <!-- ── Tarjetas de resumen ── -->
+  <div class="tarjetas-grid">
+
+    <!-- TARJETA: Inspecciones Técnicas -->
+    <div class="tarjeta tarjeta-tecnica">
+
+      <div class="tarjeta-header">
+        <div class="tarjeta-icono">🔧</div>
+        <div>
+          <p class="tarjeta-tipo">Inspecciones Técnicas</p>
+          <p class="tarjeta-total">
+            <span class="numero">{{ tecnicas.total }}</span>
+            <span class="numero-label">programadas</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="tarjeta-separador"></div>
+
+      <!-- Próxima inspección técnica -->
+      <div class="proxima-seccion" *ngIf="tecnicas.proxima; else sinProxima">
+        <p class="proxima-titulo">📅 Próxima inspección</p>
+        <div class="proxima-dato">
+          <span class="proxima-label">Código</span>
+          <span class="proxima-valor">{{ tecnicas.proxima.codigo }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Lugar</span>
+          <span class="proxima-valor">{{ tecnicas.proxima.lugarProduccion }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Fecha</span>
+          <span class="proxima-valor resaltado">{{ tecnicas.proxima.fecha }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Hora</span>
+          <span class="proxima-valor resaltado">{{ tecnicas.proxima.hora }}</span>
+        </div>
+      </div>
+
+      <!-- Si no hay proxima inspección -->
+      <ng-template #sinProxima>
+        <p class="sin-proxima">Sin inspecciones próximas programadas.</p>
+      </ng-template>
+
+    </div>
+
+    <!-- TARJETA: Inspecciones Fitosanitarias -->
+    <div class="tarjeta tarjeta-fito">
+
+      <div class="tarjeta-header">
+        <div class="tarjeta-icono">🌿</div>
+        <div>
+          <p class="tarjeta-tipo">Inspecciones Fitosanitarias</p>
+          <p class="tarjeta-total">
+            <span class="numero">{{ fitosanitarias.total }}</span>
+            <span class="numero-label">programadas</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="tarjeta-separador"></div>
+
+      <!-- Próxima inspección fitosanitaria -->
+      <div class="proxima-seccion" *ngIf="fitosanitarias.proxima; else sinProximaFito">
+        <p class="proxima-titulo">📅 Próxima inspección</p>
+        <div class="proxima-dato">
+          <span class="proxima-label">Código</span>
+          <span class="proxima-valor">{{ fitosanitarias.proxima.codigo }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Lugar</span>
+          <span class="proxima-valor">{{ fitosanitarias.proxima.lugarProduccion }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Fecha</span>
+          <span class="proxima-valor resaltado">{{ fitosanitarias.proxima.fecha }}</span>
+        </div>
+        <div class="proxima-dato">
+          <span class="proxima-label">Hora</span>
+          <span class="proxima-valor resaltado">{{ fitosanitarias.proxima.hora }}</span>
+        </div>
+      </div>
+
+      <ng-template #sinProximaFito>
+        <p class="sin-proxima">Sin inspecciones próximas programadas.</p>
+      </ng-template>
+
+    </div>
+
+  </div>
+
+</div>
