@@ -35,6 +35,7 @@ export class ViewFormProduccion {
   };
 
   registrarProduccion() {
+    
     console.log('Datos enviados:', this.formData);
 
     // Aquí luego conecta con la API

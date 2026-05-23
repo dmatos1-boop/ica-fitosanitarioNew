@@ -20,6 +20,7 @@ import { ConfigUmbral } from './vista/dashboard-admin/config-umbral/config-umbra
 import { AdminInicio } from './vista/dashboard-admin/admin-inicio/admin-inicio';
 import { Misinspecciones } from './vista/dashboard-tecnico/inspecciones/inspecciones';
 import { Incio } from './vista/dashboard-tecnico/incio/incio';
+import { FormInspeccion } from './vista/dashboard-user/form-inspeccion';
 
 
 
@@ -59,6 +60,7 @@ export const routes: Routes = [
       { path: 'produccion', component: ViewProduccion }, // modulo de produccion o lugares de produccion
       { path:  'formulario-produccion', component: ViewFormProduccion} , //formulario para registro de lugares de produccion
       { path: 'visita', component: ViewInspecciones },   //modulo de citas de inspecciones 
+      {path: 'inspecciones', component: FormInspeccion}, //formulario para agendar citas
       { path: '', redirectTo: 'inicio', pathMatch: 'full' }
     ]
    }

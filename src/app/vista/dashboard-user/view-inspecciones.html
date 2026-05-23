@@ -1,29 +1,17 @@
 <div >
-    <div class="box-cards">
-        <div class="card">
 
-            <h2>Agendar tu Cita </h2>
-
-            <p>
-                Agenda tu cita de inspeccion fitosanitaria o tecnica
-                <br><br><!--espaciado-->
-            </p>
-
-            <button class="btn-verde" >Agendar Cita</button>
-               
-
-    </div>
-    <div class="card">
-
-            <h2>Gestión de citas</h2>
-            <p>
-                Revisa las citas agendadas o revisa el informe si tu cita ya fue realizada<br><br>   <!--espaciado-->
-            </p>
-
-            <button class="btn-verde"> Gestiona</button>
-
-   </div>
+    <div class="modulo-header">
    
-</div>
+    <h2>Inspecciones</h2>
+   
+    <div class="botones">
+    <button class="btn-nuevo" routerLink="/usuario/inspecciones">+ Agendar Cita</button>
+    <button class="btn-nuevo" >+ Gestionar Citas</button>
+    </div>
+  </div>
+   
+
 
     <app-tabla-inspeccion></app-tabla-inspeccion>
+
+    </div>

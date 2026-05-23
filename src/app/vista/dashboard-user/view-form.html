@@ -1,56 +1,130 @@
-<div class="box-form">
-    <div class="formulario-card">
+<div class="box-form" *ngIf="!exito">
+    <div class="formulario-card"  >
 
         <h2>Solicitud de Registro de Predio</h2>
 
-            <form>
+           <form #formPredio="ngForm" (ngSubmit)="guardarFormulario()"> <!--llama a la funcion para mostrar el modal-->
+
+    <!-- Departamento -->
+    <label>Departamento</label>
+
+    <select
+        name="departamento"
+        [(ngModel)]="departamentoSeleccionado"
+        (change)="cargarMunicipios()"
+        required
+        #departamento="ngModel"
+        [class.input-error]="departamento.invalid && departamento.touched">
+
+        <option value="">Seleccione un departamento</option>
+
+        <option *ngFor="let d of departamentos" [value]="d">
+            {{ d }}
+        </option>
+
+    </select>
+
+    <!-- Municipio -->
+    <label>Ciudad / Municipio</label>
+
+    <select
+        name="municipio"
+        [(ngModel)]="municipioSeleccionado"
+        required
+        #municipio="ngModel"
+        [class.input-error]="municipio.invalid && municipio.touched">
+
+        <option value="">Seleccione un municipio</option>
+        <option *ngFor="let m of municipios" [value]="m">
+            {{ m }}
+        </option>
+    </select>
+
+    <!-- Vereda -->
+
+    <label>Vereda</label>
+
+    <input
+        type="text"
+        name="vereda"
+        ngModel
+        required
+        placeholder="Vereda"
+        #vereda="ngModel"
+        [class.input-error]="vereda.invalid && vereda.touched">
+
+    <!-- Dirección -->
+    <label>Dirección</label>
+
+    <input
+        type="text"
+        name="direccion"
+        ngModel
+        required
+        placeholder="Nombre de la hacienda o finca"
+        #direccion="ngModel"
+        [class.input-error]="direccion.invalid && direccion.touched">
+
+    <!-- Hectáreas -->
+    <label>Hectáreas</label>
+
+    <input
+        type="number"
+        name="hectareas"
+        ngModel
+        required
+        placeholder="12"
+        #hectareas="ngModel"
+        [class.input-error]="hectareas.invalid && hectareas.touched">
+
+    <h3>Documentos requeridos</h3>
+
+    <!-- Estos NO son obligatorios -->
+    <label>Escritura pública o título de propiedad</label>
+    <input type="file">
+
+    <label>Cédula de ciudadanía</label>
+    <input type="file">
+
+    <label>Comprobante de pago impuesto predial</label>
+    <input type="file">
+
+    <label>Certificado de tradición y libertad</label>
+    <input type="file">
+
+    <div class="form-botones">
+
+        <button
+            type="submit"
+            class="btn-verde"
+            [disabled]="formPredio.invalid">
+
+            Enviar solicitud
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-cancelar"
+            routerLink="/usuario/predio">
+
+            Cancelar
+
+        </button>
+
+    </div>
+
+</form>
 
 
-                <h3>Dirección del predio</h3>
 
-                <label>Departamento</label>
-                <select>
+</div>
+          
+</div> 
+   
+<app-exito
+    *ngIf="exito"
+    mensaje="La solicitud del predio fue enviada correctamente"
+    (volver)="volverListado()">
 
-                <option value="">Seleccione un departamento</option>
-
-                <option *ngFor="let d of departamentos">
-                {{d}}
-                </option>
-
-                </select>
-
-                <label>Ciudad / Municipio</label>
-                    <input type="text" placeholder="Municipio">
-
-                <label>Vereda</label>
-                    <input type="text" placeholder="Vereda">
-
-                    <h3>Documentos requeridos</h3>
-
-                    <label>Escritura pública o título de propiedad</label>
-                    <input type="file">
-
-                    <label>Cédula de ciudadanía</label>
-                    <input type="file">
-
-                    <label>Comprobante de pago impuesto predial</label>
-                    <input type="file">
-
-                    <label>Certificado de tradición y libertad</label>
-                    <input type="file">
-
-                    <div class="form-botones">
-
-                        <button type="submit" class="btn-verde">
-                        Enviar solicitud
-                        </button>
-
-                        <button type="button" class="btn-cancelar" routerLink="/usuario/predio">
-                        Cancelar
-                        </button>
-
-                    </div>
-
-            </form>
-        </div>            
-</div>     
+</app-exito>   

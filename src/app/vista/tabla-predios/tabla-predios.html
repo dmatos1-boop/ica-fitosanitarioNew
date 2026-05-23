@@ -6,8 +6,9 @@
             <thead >
             <tr>
             <th>Nombre del Predio</th>
+            <th>Departamento</th>
             <th>Municipio</th>
-            <th>Área</th>
+            <th>Área (Ha)</th>
             <th>Estado</th>
             </tr>
             </thead>
@@ -17,6 +18,7 @@
             <tr *ngFor="let predio of predios">
 
             <td>{{predio.nombre}}</td>
+            <td>{{predio.departamento}}</td>
             <td>{{predio.municipio}}</td>
             <td>{{predio.area}}</td>
             <td>

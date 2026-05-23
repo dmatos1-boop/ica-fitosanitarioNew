@@ -14,6 +14,7 @@ export class TablaPredios {
 
     {
       nombre: "La Esperanza",
+      departamento:"Santander",
       municipio: "Bucaramanga",
       area: 12.5,
       estado: "Activo"
@@ -21,6 +22,7 @@ export class TablaPredios {
 
     {
       nombre: "El Porvenir",
+      departamento:"Santander",
       municipio: "Piedecuesta",
       area: 8.3,
       estado: "Activo"
@@ -28,6 +30,7 @@ export class TablaPredios {
 
     {
       nombre: "Villa Verde",
+      departamento:"Santander",
       municipio: "Floridablanca",
       area: 20.1,
       estado: "Visita Pendiente"
