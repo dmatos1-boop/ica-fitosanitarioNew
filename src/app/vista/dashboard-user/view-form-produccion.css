@@ -30,11 +30,7 @@ input, select {
     border-radius: 6px;
     border: 1px solid #ccc;
 }
-.botonesbox{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px ;
-}
+
 .btn-cancelar{
 margin-top: 15px;
 background:#e62d2d;
