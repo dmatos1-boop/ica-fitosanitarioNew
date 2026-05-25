@@ -1,0 +1,55 @@
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #d1d5db;
+    margin-bottom: 15px;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.input-error {
+    border: 2px solid #ef4444;
+    background-color: #fff5f5;
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+
+.btn-verde{
+
+margin-top:15px;
+padding:12px 20px;
+background:var(--verde-botones);
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+.btn-verde:hover{
+
+background: var(--verde-botones2);
+
+}
+
+.btn-cancelar{
+margin-top: 15px;
+background:#e62d2d;
+border:none;
+color: rgb(255, 254, 254);
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+.btn-cancelar:hover{
+    background:rgb(244, 20, 20);
+}

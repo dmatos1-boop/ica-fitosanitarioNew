@@ -1,0 +1,108 @@
+<div class="box-form" *ngIf="!exito">
+
+    <div class="formulario-card">
+
+        <h2>Agendar cita de inspección</h2>
+
+        <form #formCita="ngForm" (ngSubmit)="guardarCita()">
+
+            <!-- Tipo de inspección -->
+            <label>Tipo de inspección</label>
+
+            <select
+                name="tipoInspeccion"
+                [(ngModel)]="tipoInspeccion"
+                required
+                #tipo="ngModel"
+                [class.input-error]="tipo.invalid && tipo.touched">
+
+                <option value="">Seleccione una opción</option>
+
+                <option value="Fitosanitaria">
+                    Inspección fitosanitaria
+                </option>
+
+                <option value="Tecnica">
+                    Inspección técnica
+                </option>
+
+            </select>
+
+            <!-- Predio -->
+            <label>Predio</label>
+
+            <select
+                name="predio"
+                [(ngModel)]="predioSeleccionado"
+                required
+                #predio="ngModel"
+                [class.input-error]="predio.invalid && predio.touched">
+
+                <option value="">Seleccione un predio</option>
+
+                <option *ngFor="let p of predios" [value]="p">
+                    {{ p }}
+                </option>
+
+            </select>
+
+            <!-- Fecha -->
+            <label>Fecha de la cita</label>
+
+            <input
+                type="date"
+                name="fecha"
+                [(ngModel)]="fechaCita"
+                required
+                #fecha="ngModel"
+                [class.input-error]="fecha.invalid && fecha.touched">
+
+            <!-- Hora -->
+            <label>Hora</label>
+
+            <input
+                type="time"
+                name="hora"
+                [(ngModel)]="horaCita"
+                required
+                #hora="ngModel"
+                [class.input-error]="hora.invalid && hora.touched">
+
+
+            <!-- Botones -->
+            <div class="form-botones">
+
+                <button
+                    type="submit"
+                    class="btn-verde"
+                    [disabled]="formCita.invalid">
+
+                    Agendar cita
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    routerLink="/usuario/visita">
+
+                    Cancelar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- Vista éxito -->
+
+<app-exito
+    *ngIf="exito"
+    mensaje="La cita fue agendada correctamente"
+    (volver)="volverListado()">
+
+</app-exito>

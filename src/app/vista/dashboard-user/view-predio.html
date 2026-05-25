@@ -1,30 +1,17 @@
 <div >
-    <div class="box-cards">
-        <div class="card">
 
-            <h2>Registro de Predio </h2>
-
-            <p>
-                Si deseas registrar un nuevo predio en el sistema,
-                puedes solicitar su registro.
-            </p>
-
-            <button class="btn-verde" routerLink="/usuario/formulario">Solicitar Registro</button>
-               
-
+ <div class="modulo-header">
+   
+    <h2>Predios Registrados</h2>
+   
+    <div class="botones">
+    <button class="btn-nuevo" routerLink="/usuario/formulario">+ Nuevo Predio</button>
     </div>
-    <div class="card">
+  </div>
+  
 
-            <h2>Gestión de Lotes</h2>
-            <p>
-                Si deseas gestionar el estado de los lotes en cada predio  <br><br>   
-            </p>
 
-            <button class="btn-verde"> Gestionar</button>
-
-   </div>
-
-</div>
+ 
         <app-tabla-predios></app-tabla-predios>
 
-
+</div>

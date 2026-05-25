@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ExitoComponent } from '../exito/exito';
 
 
 
 @Component({
   selector: 'app-view-form-produccion',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './view-form-produccion.html',
   styleUrl: './view-form-produccion.css',
 })
@@ -33,8 +35,10 @@ export class ViewFormProduccion {
   };
 
   registrarProduccion() {
+    
     console.log('Datos enviados:', this.formData);
 
     // Aquí luego conecta con la API
+    
   }
 }
