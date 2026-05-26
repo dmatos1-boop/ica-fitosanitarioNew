@@ -21,6 +21,7 @@ import { GestionPredios } from './vista/dashboard-admin/gestion-predios/gestion-
 import { GestionUsuariosComponent } from './vista/dashboard-admin/gestion-usuarios/gestion-usuarios';
 import { ConfigUmbral } from './vista/dashboard-admin/config-umbral/config-umbral';
 import { AdminInicio } from './vista/dashboard-admin/admin-inicio/admin-inicio';
+import { FormInspeccion } from './vista/dashboard-user/form-inspeccion';
 
 export const routes: Routes = [
 
@@ -56,15 +57,16 @@ export const routes: Routes = [
   },
 
   { path: 'usuario', component: DashboardUserComponent,
-    children: [
-      { path: 'inicio', component: ViewInicio },
-      { path: 'predio', component: ViewPredio },
-      { path: 'formulario', component: ViewForm },
-      { path: 'produccion', component: ViewProduccion },
-      { path: 'formulario-produccion', component: ViewFormProduccion },
-      { path: 'visita', component: ViewInspecciones },
-      { path: '', redirectTo: 'inicio', pathMatch: 'full' }
-    ]
-  }
+  children: [
+    { path: 'inicio', component: ViewInicio },
+    { path: 'predio', component: ViewPredio },
+    { path: 'formulario', component: ViewForm },
+    { path: 'produccion', component: ViewProduccion },
+    { path: 'formulario-produccion', component: ViewFormProduccion },
+    { path: 'visita', component: ViewInspecciones },
+    { path: 'form-inspeccion', component: FormInspeccion },
+    { path: '', redirectTo: 'inicio', pathMatch: 'full' }
+  ]
+}
 
 ];

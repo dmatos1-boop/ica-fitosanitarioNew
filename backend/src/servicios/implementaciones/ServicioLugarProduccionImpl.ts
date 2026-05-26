@@ -11,19 +11,28 @@ export class ServicioLugarProduccionImpl implements IServicioLugarProduccion {
   }
 
   async solicitarRegistroLugar(datos: any): Promise<any> {
-    const nroRegistroICA = this.generarNroRegistroICA();
-    const sql = `INSERT INTO LUGAR_PRODUCCION (nroRegistroICA, nombre, nroPredial, nombreEmpresa, telefonoEmpresa, ubicacion, departamento, municipio, vereda, nroDocProductor, estado) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
-    const valores = [nroRegistroICA, datos.nombre, datos.nroPredial, datos.nombreEmpresa,
-                     datos.telefonoEmpresa, datos.ubicacion, datos.departamento,
-                     datos.municipio, datos.vereda, datos.nroDocProductor];
-    return new Promise((resolve, reject) => {
-      conexion.query(sql, valores, (error, resultado) => {
-        if (error) reject(error);
-        else resolve({ nroRegistroICA, ...resultado });
-      });
+  const nroRegistroICA = this.generarNroRegistroICA();
+  const sql = `INSERT INTO LUGAR_PRODUCCION (nroRegistroICA, nombre, nroPredial, nombreEmpresa, telefonoEmpresa, ubicacion, departamento, municipio, vereda, nroDocProductor, estado) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
+  const valores = [
+    nroRegistroICA,
+    datos.nombre,
+    datos.nroPredial || '',
+    datos.nombreEmpresa || datos.nombre,
+    datos.telefonoEmpresa || '',
+    datos.ubicacion || '',
+    datos.departamento || '',
+    datos.municipio || '',
+    datos.vereda || '',
+    datos.nroDocProductor
+  ];
+  return new Promise((resolve, reject) => {
+    conexion.query(sql, valores, (error, resultado) => {
+      if (error) reject(error);
+      else resolve({ nroRegistroICA, ...resultado });
     });
-  }
+  });
+}
 
   async consultarLugar(nroRegistroICA: string): Promise<any> {
     const sql = `SELECT * FROM LUGAR_PRODUCCION WHERE nroRegistroICA = ?`;

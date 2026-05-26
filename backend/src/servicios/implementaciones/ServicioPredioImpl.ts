@@ -21,18 +21,26 @@ export class ServicioPredioImpl implements IServicioPredio {
   }
 
   async solicitarRegistroPredio(datos: any): Promise<any> {
-    const nroRegistroICA = this.generarNroRegistroICA();
-    const sql = `INSERT INTO PREDIO (nroRegistroICA, nroPredial, nombre, area, correo, codigoDaneVereda, nroDocProductor, estado) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
-    const valores = [nroRegistroICA, datos.nroPredial, datos.nombre, datos.area,
-                     datos.correo, datos.codigoDaneVereda, datos.nroDocProductor];
-    return new Promise((resolve, reject) => {
-      conexion.query(sql, valores, (error, resultado) => {
-        if (error) reject(error);
-        else resolve({ nroRegistroICA, ...resultado });
-      });
+  const nroRegistroICA = this.generarNroRegistroICA();
+  const nroPredial = `${Date.now()}`;
+  const sql = `INSERT INTO PREDIO (nroRegistroICA, nroPredial, nombre, area, departamento, municipio, nroDocProductor, estado) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
+  const valores = [
+    nroRegistroICA,
+    nroPredial,
+    datos.nombre,
+    datos.extension || 0,
+    datos.departamento || '',
+    datos.municipio || '',
+    datos.nroDocProductor
+  ];
+  return new Promise((resolve, reject) => {
+    conexion.query(sql, valores, (error, resultado) => {
+      if (error) reject(error);
+      else resolve({ nroRegistroICA, ...resultado });
     });
-  }
+  });
+}
 
   async consultarPredio(nroRegistroICA: string): Promise<any> {
     const sql = `SELECT * FROM PREDIO WHERE nroRegistroICA = ?`;

@@ -1,64 +1,44 @@
 <div class="form-container">
-  <h1>Registro de Producción</h1>
+  <h1>Registro de Lugar de Producción</h1>
 
   <form (ngSubmit)="registrarProduccion()">
 
+    <label>Nombre del lugar</label>
+    <input type="text" name="nombre" [(ngModel)]="formData.nombre" required placeholder="Nombre del lugar de producción">
 
-    <!-- Selección de predio -->
-    <h2>Predio</h2>
-    <label>Selecciona el predio asociado</label>
-    <select [(ngModel)]="formData.predioId" name="predio">
-      <option *ngFor="let predio of predios" [value]="predio.id">   
+    <label>Predio asociado</label>
+    <select name="predio" [(ngModel)]="formData.predioId" required>
+      <option value="">Seleccione un predio</option>
+      <option *ngFor="let predio of predios" [value]="predio.nroRegistroICA">
         {{ predio.nombre }}
       </option>
     </select>
 
-    <!-- Producción agrícola -->
-    <h2>Producción Agrícola</h2>
-
-      <input
-        type="text"
-        name="lugar"
-        ngModel
-        required
-        placeholder="Nombre del lugar"
-        #lugar="ngModel"
-        [class.input-error]="lugar.invalid && lugar.touched">
-
-    <label>Tipo de cultivo</label>
-    <select [(ngModel)]="formData.cultivo" name="cultivo">
-      <option value="cafe">Café</option>
-      <option value="maiz">Maíz</option>
-      <option value="arroz">Arroz</option>
-      <option value="frutas">Frutas</option>
-      <option value="hortalizas">Hortalizas</option>
-      <option value="otro">Otro</option>
-    </select>
-
-    <label>Área sembrada (hectáreas)</label>
-    <input type="number" [(ngModel)]="formData.area" name="area">
+    <label>Extensión (hectáreas)</label>
+    <input type="number" name="extension" [(ngModel)]="formData.extension" placeholder="Extensión en hectáreas">
 
     <label>Tipo de producción</label>
-    <select [(ngModel)]="formData.tipoProduccion" name="tipoProduccion">
+    <select name="tipoProduccion" [(ngModel)]="formData.tipoProduccion">
+      <option value="">Seleccione un tipo</option>
       <option value="organica">Orgánica</option>
       <option value="convencional">Convencional</option>
       <option value="mixta">Mixta</option>
     </select>
 
-    <label>Fecha de siembra</label>
-    <input type="date" [(ngModel)]="formData.fechaSiembra" name="fechaSiembra">
+    <div *ngIf="error" class="mensaje-error">{{ error }}</div>
 
-    <label>Fecha estimada de cosecha</label>
-    <input type="date" [(ngModel)]="formData.fechaCosecha" name="fechaCosecha">
-
-
-
-  
     <div class="form-botones">
-    <button type="submit" (click)="registrarProduccion()" class="btn-verde">Registrar</button>
-    <button type="button" class="btn-cancelar" routerLink="/usuario/produccion">
-      Cancelar
-    </button>
+      <button type="submit" class="btn-verde" [disabled]="cargando">
+        {{ cargando ? 'Registrando...' : 'Registrar' }}
+      </button>
+      <button type="button" class="btn-cancelar" routerLink="/usuario/produccion">Cancelar</button>
     </div>
+
   </form>
-</div>  
+</div>
+
+<app-exito
+  *ngIf="exito"
+  mensaje="El lugar de producción fue registrado correctamente"
+  (volver)="volverListado()">
+</app-exito>
