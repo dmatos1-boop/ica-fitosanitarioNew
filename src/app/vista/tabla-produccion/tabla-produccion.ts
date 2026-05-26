@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-tabla-produccion',
@@ -8,41 +10,34 @@ import { Component } from '@angular/core';
   templateUrl: './tabla-produccion.html',
   styleUrl: './tabla-produccion.css',
 })
-export class TablaProduccion {
-  predios = [
+export class TablaProduccion implements OnInit {
 
-    {
-      nombre: "La Esperanza",
-      municipio: "Bucaramanga",
-      area_sembrada: 4.5,
-      producto: "Papa"
-    },
+  private apiUrl = 'http://localhost:3000';
+  predios: any[] = [];
 
-    {
-      nombre: "El Porvenir",
-      municipio: "Piedecuesta",
-      area_sembrada: 2.3,
-      producto: "Zanahoria"
-    },
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-    {
-      nombre: "Villa Verde",
-      municipio: "Floridablanca",
-      area_sembrada: 10.1,
-      producto: "Maiz"
-    },
-    {
-      nombre: "La Esperanza",
-      municipio: "Bucaramanga",
-      area_sembrada: 4.5,
-      producto: "Papa"
-    },
-    {
-      nombre: "La Esperanza",
-      municipio: "Bucaramanga",
-      area_sembrada: 4.5,
-      producto: "Papa"
-    }
+  private getHeaders(): HttpHeaders {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('token') : '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
 
-  ]
+  ngOnInit(): void {
+    this.http.get<any[]>(`${this.apiUrl}/lugares`, { headers: this.getHeaders() })
+      .subscribe({
+        next: (data) => {
+          this.predios = data.map(l => ({
+            nombre: l.nombre,
+            municipio: l.municipio,
+            area_sembrada: l.extension,
+            producto: l.tipoProduccion || '—'
+          }));
+        },
+        error: () => console.error('Error al cargar lugares de producción')
+      });
+  }
 }

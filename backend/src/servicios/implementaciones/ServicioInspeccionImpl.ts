@@ -29,14 +29,14 @@ export class ServicioInspeccionImpl implements IServicioInspeccion {
   }
 
   async asignarTecnico(idOrden: number, documentoTecnico: string): Promise<void> {
-    const sql = `UPDATE ORDEN_INSPECCION SET documentoTecnico=? WHERE idOrden=?`;
-    return new Promise((resolve, reject) => {
-      conexionInspecciones.query(sql, [documentoTecnico, idOrden], (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
+  const sql = `UPDATE ORDEN_INSPECCION SET documentoTecnico=?, estado='PROGRAMADA' WHERE idOrden=?`;
+  return new Promise((resolve, reject) => {
+    conexionInspecciones.query(sql, [documentoTecnico, idOrden], (error) => {
+      if (error) reject(error);
+      else resolve();
     });
-  }
+  });
+}
 
   async registrarResultadoFitosanitario(idOrden: number, datos: any): Promise<any> {
     const incidencia = (datos.plantasAfectadas / datos.cantidadPlantas) * 100;

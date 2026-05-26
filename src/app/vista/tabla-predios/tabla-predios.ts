@@ -1,40 +1,45 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-tabla-predios',
   imports: [CommonModule],
-  standalone:true,
+  standalone: true,
   templateUrl: './tabla-predios.html',
   styleUrl: './tabla-predios.css',
 })
-export class TablaPredios {
+export class TablaPredios implements OnInit {
 
-    predios = [
+  private apiUrl = 'http://localhost:3000';
+  predios: any[] = [];
 
-    {
-      nombre: "La Esperanza",
-      departamento:"Santander",
-      municipio: "Bucaramanga",
-      area: 12.5,
-      estado: "Activo"
-    },
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-    {
-      nombre: "El Porvenir",
-      departamento:"Santander",
-      municipio: "Piedecuesta",
-      area: 8.3,
-      estado: "Activo"
-    },
+  private getHeaders(): HttpHeaders {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('token') : '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
 
-    {
-      nombre: "Villa Verde",
-      departamento:"Santander",
-      municipio: "Floridablanca",
-      area: 20.1,
-      estado: "Visita Pendiente"
-    }
-
-  ]
+  ngOnInit(): void {
+    this.http.get<any[]>(`${this.apiUrl}/predios`, { headers: this.getHeaders() })
+      .subscribe({
+        next: (data) => {
+          this.predios = data.map(p => ({
+            nombre: p.nombre,
+            departamento: p.departamento,
+            municipio: p.municipio,
+            area: p.extension,
+            estado: p.estado === 'ACTIVO' || p.estado === 'APROBADO' ? 'Activo' :
+                    p.estado === 'INACTIVO' || p.estado === 'RECHAZADO' ? 'Inactivo' : p.estado
+          }));
+        },
+        error: () => console.error('Error al cargar predios')
+      });
+  }
 }

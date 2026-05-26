@@ -1,59 +1,45 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-tabla-inspeccion',
   imports: [CommonModule],
   standalone: true,
   templateUrl: './tabla-inspeccion.html',
-  styleUrl: './tabla-inspeccion.css', 
+  styleUrl: './tabla-inspeccion.css',
 })
-export class TablaInspeccion {
+export class TablaInspeccion implements OnInit {
 
-  citas = [
+  private apiUrl = 'http://localhost:3000';
+  citas: any[] = [];
 
-    {
-      nombre: "La Esperanza",
-      inspeccion: "Fitosanitaria",
-      fecha: new Date('2026-04-10T14:30:00'),
-      estado: "Pendiente"
-    },
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-    {
-      nombre: "El porvenir",
-      inspeccion: "Inspeccion",
-      fecha: new Date('2026-04-01T09:30:00'),
-      estado: "Realizada"
-    },
+  private getHeaders(): HttpHeaders {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('token') : '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
 
-    {
-      nombre: "Villa verde",
-      inspeccion: "Fitosanitaria",
-      fecha: new Date('2026-04-20T12:30:00'),
-      estado: "Pendiente"
-    },
-
-    {
-      nombre: "El porvenir",
-      inspeccion: "Inspeccion",
-      fecha: new Date('2026-04-01T09:30:00'),
-      estado: "Realizada"
-    },
-
-    {
-      nombre: "El porvenir",
-      inspeccion: "Inspeccion",
-      fecha: new Date('2026-04-01T09:30:00'),
-      estado: "Realizada"
-    },
-
-    {
-      nombre: "El porvenir",
-      inspeccion: "Inspeccion",
-      fecha: new Date('2026-04-01T09:30:00'),
-      estado: "Realizada"
-    }
-
-  ]
-
+  ngOnInit(): void {
+    this.http.get<any[]>(`${this.apiUrl}/inspecciones`, { headers: this.getHeaders() })
+      .subscribe({
+        next: (data) => {
+          this.citas = data.map(i => ({
+            nombre: i.lugarProduccion || i.nroRegICAlugar,
+            inspeccion: i.tipoInspeccion,
+            fecha: i.fechaProgramada ? new Date(i.fechaProgramada) : null,
+            estado: i.estado === 'PROGRAMADA' ? 'Programada' :
+                    i.estado === 'REALIZADA'  ? 'Realizada'  :
+                    i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Solicitada'
+          }));
+        },
+        error: () => console.error('Error al cargar inspecciones')
+      });
+  }
 }
