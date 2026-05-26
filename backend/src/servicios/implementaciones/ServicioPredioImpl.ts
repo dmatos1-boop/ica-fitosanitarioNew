@@ -76,12 +76,14 @@ export class ServicioPredioImpl implements IServicioPredio {
   }
 
   async gestionarEstadoPredio(nroRegistroICA: string, estado: string): Promise<void> {
-    const sql = `UPDATE PREDIO SET estado=? WHERE nroRegistroICA=?`;
-    return new Promise((resolve, reject) => {
-      conexion.query(sql, [estado, nroRegistroICA], (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
+  const sql = estado === 'APROBADO' 
+    ? `UPDATE PREDIO SET estado=?, fechaAprobacion=CURDATE() WHERE nroRegistroICA=?`
+    : `UPDATE PREDIO SET estado=? WHERE nroRegistroICA=?`;
+  return new Promise((resolve, reject) => {
+    conexion.query(sql, [estado, nroRegistroICA], (error) => {
+      if (error) reject(error);
+      else resolve();
     });
-  }
+  });
+}
 }

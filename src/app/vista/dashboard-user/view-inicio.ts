@@ -34,34 +34,68 @@ export class ViewInicio implements OnInit {
     return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
+  private formatearFecha(fecha: string): string {
+    if (!fecha) return '—';
+    return new Date(fecha).toLocaleDateString('es-CO', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.nombreProd = localStorage.getItem('nombre') || 'Productor';
     }
 
     this.http.get<any[]>(`${this.apiUrl}/predios`, { headers: this.getHeaders() })
-      .subscribe({ next: (data) => {
-        const activos = data.filter(p => p.estado === 'ACTIVO' || p.estado === 'APROBADO');
-        this.accesos[0].valor = activos.length.toString();
-        if (activos.length > 0) this.accesos[0].date = activos[0].fechaRegistro || '—';
-      }});
+  .subscribe({ next: (data) => {
+    const activos = data.filter(p => p.estado === 'ACTIVO' || p.estado === 'APROBADO');
+    this.accesos[0].valor = activos.length.toString();
+    const conFecha = activos.filter(p => p.fechaAprobacion);
+    if (conFecha.length > 0) {
+      const ultimo = conFecha.sort((a, b) => 
+        new Date(b.fechaAprobacion).getTime() - new Date(a.fechaAprobacion).getTime()
+      )[0];
+      this.accesos[0].date = this.formatearFecha(ultimo.fechaAprobacion);
+    }
+  }});
 
     this.http.get<any[]>(`${this.apiUrl}/lotes`, { headers: this.getHeaders() })
-      .subscribe({ next: (data) => {
-        const activos = data.filter(l => l.estado === 'ACTIVO' || l.estado === 'APROBADO');
-        this.accesos[1].valor = activos.length.toString();
-      }});
+  .subscribe({ next: (data) => {
+    const activos = data.filter(l => l.estado === 'ACTIVO' || l.estado === 'APROBADO');
+    this.accesos[1].valor = activos.length.toString();
+    const conFecha = activos.filter(l => l.fechaSiembra);
+    if (conFecha.length > 0) {
+      const ultimo = conFecha.sort((a, b) =>
+        new Date(b.fechaSiembra).getTime() - new Date(a.fechaSiembra).getTime()
+      )[0];
+      this.accesos[1].date = this.formatearFecha(ultimo.fechaSiembra);
+    }
+  }});
 
     this.http.get<any[]>(`${this.apiUrl}/lugares`, { headers: this.getHeaders() })
-      .subscribe({ next: (data) => {
-        this.accesos[2].valor = data.length.toString();
-      }});
+  .subscribe({ next: (data) => {
+    this.accesos[2].valor = data.length.toString();
+    const conFecha = data.filter(l => l.fechaAprobacion);
+    if (conFecha.length > 0) {
+      const ultimo = conFecha.sort((a, b) =>
+        new Date(b.fechaAprobacion).getTime() - new Date(a.fechaAprobacion).getTime()
+      )[0];
+      this.accesos[2].date = this.formatearFecha(ultimo.fechaAprobacion);
+    }
+  }});
 
     this.http.get<any[]>(`${this.apiUrl}/inspecciones`, { headers: this.getHeaders() })
-      .subscribe({ next: (data) => {
-        const confirmadas = data.filter(i => i.estado === 'PROGRAMADA' || i.estado === 'REALIZADA');
-        this.accesos[3].valor = confirmadas.length.toString();
-      }});
+  .subscribe({ next: (data) => {
+    const confirmadas = data.filter(i => i.estado === 'PROGRAMADA' || i.estado === 'REALIZADA');
+    this.accesos[3].valor = confirmadas.length.toString();
+    const conFecha = confirmadas.filter(i => i.fechaProgramada);
+    if (conFecha.length > 0) {
+      const ultimo = conFecha.sort((a, b) =>
+        new Date(b.fechaProgramada).getTime() - new Date(a.fechaProgramada).getTime()
+      )[0];
+      this.accesos[3].date = this.formatearFecha(ultimo.fechaProgramada);
+    }
+  }});
   }
 
   Dir(ruta: String) {

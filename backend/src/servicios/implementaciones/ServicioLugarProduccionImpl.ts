@@ -82,12 +82,14 @@ export class ServicioLugarProduccionImpl implements IServicioLugarProduccion {
   }
 
   async gestionarEstadoLugar(nroRegistroICA: string, estado: string): Promise<void> {
-    const sql = `UPDATE LUGAR_PRODUCCION SET estado=? WHERE nroRegistroICA=?`;
-    return new Promise((resolve, reject) => {
-      conexion.query(sql, [estado, nroRegistroICA], (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
+  const sql = estado === 'APROBADO'
+    ? `UPDATE LUGAR_PRODUCCION SET estado=?, fechaAprobacion=CURDATE() WHERE nroRegistroICA=?`
+    : `UPDATE LUGAR_PRODUCCION SET estado=? WHERE nroRegistroICA=?`;
+  return new Promise((resolve, reject) => {
+    conexion.query(sql, [estado, nroRegistroICA], (error) => {
+      if (error) reject(error);
+      else resolve();
     });
-  }
+  });
+}
 }
