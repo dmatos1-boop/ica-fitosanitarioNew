@@ -12,8 +12,8 @@ export class ServicioLugarProduccionImpl implements IServicioLugarProduccion {
 
   async solicitarRegistroLugar(datos: any): Promise<any> {
   const nroRegistroICA = this.generarNroRegistroICA();
-  const sql = `INSERT INTO LUGAR_PRODUCCION (nroRegistroICA, nombre, nroPredial, nombreEmpresa, telefonoEmpresa, ubicacion, departamento, municipio, vereda, nroDocProductor, estado) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
+  const sql = `INSERT INTO LUGAR_PRODUCCION (nroRegistroICA, nombre, nroPredial, nombreEmpresa, telefonoEmpresa, ubicacion, departamento, municipio, vereda, nroDocProductor, extension, tipoProduccion, estado) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDIENTE')`;
   const valores = [
     nroRegistroICA,
     datos.nombre,
@@ -24,7 +24,9 @@ export class ServicioLugarProduccionImpl implements IServicioLugarProduccion {
     datos.departamento || '',
     datos.municipio || '',
     datos.vereda || '',
-    datos.nroDocProductor
+    datos.nroDocProductor,
+    datos.extension || null,
+    datos.tipoProduccion || null
   ];
   return new Promise((resolve, reject) => {
     conexion.query(sql, valores, (error, resultado) => {

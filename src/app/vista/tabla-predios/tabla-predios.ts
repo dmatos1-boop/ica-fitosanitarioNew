@@ -34,7 +34,7 @@ export class TablaPredios implements OnInit {
             nombre: p.nombre,
             departamento: p.departamento,
             municipio: p.municipio,
-            area: p.extension,
+            area: p.area,
             estado: p.estado === 'ACTIVO' || p.estado === 'APROBADO' ? 'Activo' :
                     p.estado === 'INACTIVO' || p.estado === 'RECHAZADO' ? 'Inactivo' : p.estado
           }));

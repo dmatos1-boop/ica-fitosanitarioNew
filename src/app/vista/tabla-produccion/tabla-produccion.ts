@@ -31,11 +31,11 @@ export class TablaProduccion implements OnInit {
       .subscribe({
         next: (data) => {
           this.predios = data.map(l => ({
-            nombre: l.nombre,
-            municipio: l.municipio,
-            area_sembrada: l.extension,
-            producto: l.tipoProduccion || '—'
-          }));
+  nombre: l.nombre,
+  municipio: l.municipio,
+  area_sembrada: l.extension || '—',
+  producto: l.tipoProduccion || '—'
+}));
         },
         error: () => console.error('Error al cargar lugares de producción')
       });
