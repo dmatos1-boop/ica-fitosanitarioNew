@@ -53,7 +53,7 @@ export class GestionLugares implements OnInit {
           productorTitular: l.nroDocProductor,
           numeroICA: l.nroRegistroICA,
           predioAsociado: l.nroPredial,
-          extension: l.telefonoEmpresa,
+          extension: l.extension,
           estado: l.estado === 'APROBADO' ? 'Activo' :
                   l.estado === 'RECHAZADO' ? 'Inactivo' : 'Pendiente'
         }));
