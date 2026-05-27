@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CultivoService } from '../../../soa/cultivo.service';
 import { ExitoComponent } from '../../exito/exito';
+import { ToastService } from '../../../soa/toast.service';
 
 interface Cultivo {
   id: number;
@@ -26,8 +27,12 @@ export class GestionCultivos implements OnInit {
   error = '';
   cultivos: Cultivo[] = [];
   formulario: Cultivo = this.formularioVacio();
+  intentoEnvio = false;
 
-  constructor(private cultivoService: CultivoService) {}
+  constructor(
+    private cultivoService: CultivoService,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     setTimeout(() => { this.cargarCultivos(); }, 100);
@@ -46,8 +51,8 @@ export class GestionCultivos implements OnInit {
         }));
         this.cargando = false;
       },
-      error: (err: any) => {
-        this.error = 'Error al cargar cultivos';
+      error: () => {
+        this.toast.error('Error al cargar cultivos');
         this.cargando = false;
       }
     });
@@ -74,13 +79,17 @@ export class GestionCultivos implements OnInit {
     if (confirm(`¿Está seguro de ${accion} este cultivo?`)) {
       const nuevoEstado = c.estado === 'Activo' ? 'INACTIVO' : 'ACTIVO';
       this.cultivoService.cambiarEstado(c.id, nuevoEstado).subscribe({
-        next: () => { c.estado = c.estado === 'Activo' ? 'Inactivo' : 'Activo'; },
-        error: (err: any) => { this.error = 'Error al cambiar estado'; }
+        next: () => {
+          c.estado = c.estado === 'Activo' ? 'Inactivo' : 'Activo';
+          this.toast.exito(`Cultivo ${accion === 'desactivar' ? 'desactivado' : 'activado'} correctamente.`);
+        },
+        error: () => { this.toast.error('Error al cambiar estado del cultivo'); }
       });
     }
   }
 
   guardar(): void {
+    this.intentoEnvio = true;
     if (this.cargando) return;
     this.cargando = true;
     if (this.modoEdicion) {
@@ -91,8 +100,16 @@ export class GestionCultivos implements OnInit {
         nombreVariedad: this.formulario.tipo,
         descripcion: this.formulario.descripcion
       }).subscribe({
-        next: () => { this.cargando = false; this.cargarCultivos(); this.vista = 'exito'; },
-        error: (err: any) => { this.cargando = false; this.error = 'Error al actualizar cultivo'; }
+        next: () => {
+          this.cargando = false;
+          this.toast.exito('Cultivo actualizado exitosamente.');
+          this.cargarCultivos();
+          this.vista = 'exito';
+        },
+        error: () => {
+          this.cargando = false;
+          this.toast.error('Error al actualizar cultivo');
+        }
       });
     } else {
       this.cultivoService.crearCultivo({
@@ -102,17 +119,28 @@ export class GestionCultivos implements OnInit {
         nombreVariedad: this.formulario.tipo,
         descripcion: this.formulario.descripcion
       }).subscribe({
-        next: () => { this.cargando = false; this.cargarCultivos(); this.vista = 'exito'; },
-        error: (err: any) => { this.cargando = false; this.error = 'Error al crear cultivo'; }
+        next: () => {
+          this.cargando = false;
+          this.toast.exito('Cultivo creado exitosamente.');
+          this.cargarCultivos();
+          this.vista = 'exito';
+        },
+        error: () => {
+          this.cargando = false;
+          this.toast.error('Error al crear cultivo');
+        }
       });
     }
   }
 
   eliminar(c: Cultivo): void {
-    if (confirm('¿Está seguro de eliminar este cultivo? Esta acción no se puede deshacer.')) {
+    if (confirm('¿Está seguro de eliminar este cultivo?')) {
       this.cultivoService.eliminarCultivo(c.id).subscribe({
-        next: () => { this.cargarCultivos(); },
-        error: (err: any) => { this.error = 'Error al eliminar cultivo'; }
+        next: () => {
+          this.toast.exito('Cultivo eliminado correctamente.');
+          this.cargarCultivos();
+        },
+        error: () => { this.toast.error('Error al eliminar cultivo'); }
       });
     }
   }

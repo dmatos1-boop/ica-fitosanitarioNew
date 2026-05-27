@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ExitoComponent } from '../../exito/exito';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
+import { ToastService } from '../../../soa/toast.service';
 
 interface Inspeccion {
   id:              number;
@@ -66,10 +67,11 @@ export class Misinspecciones implements OnInit {
   formTecnica: ResultadoTecnico = this.tecnicaVacio();
 
   constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  private http: HttpClient,
+  private route: ActivatedRoute,
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private toast: ToastService
+) {}
 
   private getHeaders(): HttpHeaders {
     const token = isPlatformBrowser(this.platformId)
@@ -209,63 +211,77 @@ export class Misinspecciones implements OnInit {
   }
 
   guardarFito(): void {
-    if (!this.validarFito()) return;
-    if (!this.inspeccionSeleccionada) return;
-
-    this.http.post(
-      `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/fitosanitaria`,
-      {
-        estadoFenologico:   this.formFito.estadoFenologico,
-        areaInspeccionada:  this.formFito.areaInspeccionada,
-        cantidadPlantas:    this.formFito.totalPlantas,
-        plantasAfectadas:   this.formFito.plantasAfectadas,
-        cantidadProyectada: this.formFito.cantidadProyectada,
-        cantidadReal:       this.formFito.cantidadCosechada,
-        comentarios:        this.formFito.comentarios
-      },
-      { headers: this.getHeaders() }
-    ).subscribe({
-      next: (res: any) => {
-        const porcentaje = (this.formFito.plantasAfectadas / this.formFito.totalPlantas) * 100;
-        this.resultadoFito = {
-          ...this.formFito,
-          porcentajeInfestacion: Math.round(porcentaje * 100) / 100,
-          nivelAlerta: res.nivelAlerta || (porcentaje > 30 ? 'ALTO' : porcentaje > 10 ? 'MEDIO' : 'BAJO')
-        };
-        if (this.inspeccionSeleccionada)
-          this.inspeccionSeleccionada.estado = 'Realizada';
-        this.vista = 'resultado-fito';
-      },
-      error: () => { this.error = 'Error al guardar la inspección fitosanitaria'; }
-    });
+  if (!this.validarFito()) {
+    this.toast.error('Por favor corrige los errores del formulario.');
+    return;
   }
+  if (!this.inspeccionSeleccionada) return;
 
-  guardarTecnica(): void {
-    if (!this.validarTecnica()) return;
-    if (!this.inspeccionSeleccionada) return;
+  this.http.post(
+    `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/fitosanitaria`,
+    {
+      estadoFenologico:   this.formFito.estadoFenologico,
+      areaInspeccionada:  this.formFito.areaInspeccionada,
+      cantidadPlantas:    this.formFito.totalPlantas,
+      plantasAfectadas:   this.formFito.plantasAfectadas,
+      cantidadProyectada: this.formFito.cantidadProyectada,
+      cantidadReal:       this.formFito.cantidadCosechada,
+      comentarios:        this.formFito.comentarios
+    },
+    { headers: this.getHeaders() }
+  ).subscribe({
+    next: (res: any) => {
+      const porcentaje = (this.formFito.plantasAfectadas / this.formFito.totalPlantas) * 100;
+      this.resultadoFito = {
+        ...this.formFito,
+        porcentajeInfestacion: Math.round(porcentaje * 100) / 100,
+        nivelAlerta: res.nivelAlerta || (porcentaje > 30 ? 'ALTO' : porcentaje > 10 ? 'MEDIO' : 'BAJO')
+      };
+      if (this.inspeccionSeleccionada)
+        this.inspeccionSeleccionada.estado = 'Realizada';
+      this.toast.exito('Inspección fitosanitaria registrada exitosamente.');
+      this.vista = 'resultado-fito';
+    },
+    error: () => {
+      this.toast.error('Error al guardar la inspección fitosanitaria.');
+      this.error = 'Error al guardar la inspección fitosanitaria';
+    }
+  });
+}
 
-    this.http.post(
-      `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/tecnica`,
-      {
-        areaAcopio:                this.formTecnica.areaAcopio,
-        areaResiduosVegetales:     this.formTecnica.areaResiduosVegetales,
-        areaAlmacenamientoInsumos: this.formTecnica.areaAlmacenamiento,
-        areaDosificacion:          this.formTecnica.areaDosificacion,
-        areaResiduosMezclas:       this.formTecnica.areaResiduosMezclas,
-        areaHerramientas:          this.formTecnica.areaHerramientas,
-        areaSanitaria:             this.formTecnica.areaSanitaria,
-        comentarios:               this.formTecnica.comentarios
-      },
-      { headers: this.getHeaders() }
-    ).subscribe({
-      next: () => {
-        if (this.inspeccionSeleccionada)
-          this.inspeccionSeleccionada.estado = 'Realizada';
-        this.vista = 'exito';
-      },
-      error: () => { this.error = 'Error al guardar la inspección técnica'; }
-    });
+guardarTecnica(): void {
+  if (!this.validarTecnica()) {
+    this.toast.error('Por favor corrige los errores del formulario.');
+    return;
   }
+  if (!this.inspeccionSeleccionada) return;
+
+  this.http.post(
+    `${this.apiUrl}/inspecciones/${this.inspeccionSeleccionada.id}/tecnica`,
+    {
+      areaAcopio:                this.formTecnica.areaAcopio,
+      areaResiduosVegetales:     this.formTecnica.areaResiduosVegetales,
+      areaAlmacenamientoInsumos: this.formTecnica.areaAlmacenamiento,
+      areaDosificacion:          this.formTecnica.areaDosificacion,
+      areaResiduosMezclas:       this.formTecnica.areaResiduosMezclas,
+      areaHerramientas:          this.formTecnica.areaHerramientas,
+      areaSanitaria:             this.formTecnica.areaSanitaria,
+      comentarios:               this.formTecnica.comentarios
+    },
+    { headers: this.getHeaders() }
+  ).subscribe({
+    next: () => {
+      if (this.inspeccionSeleccionada)
+        this.inspeccionSeleccionada.estado = 'Realizada';
+      this.toast.exito('Inspección técnica registrada exitosamente.');
+      this.vista = 'exito';
+    },
+    error: () => {
+      this.toast.error('Error al guardar la inspección técnica.');
+      this.error = 'Error al guardar la inspección técnica';
+    }
+  });
+}
 
   volver(): void {
     this.vista = 'lista';

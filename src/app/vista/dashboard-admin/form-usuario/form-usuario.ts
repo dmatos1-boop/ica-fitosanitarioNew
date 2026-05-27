@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 
 export interface Usuario {
   id: number;
@@ -15,32 +14,24 @@ export interface Usuario {
   nroTarjetaProfesional?: string;
 }
 
-
 @Component({
   selector: 'app-form-usuario',
   imports: [CommonModule, FormsModule],
   templateUrl: './form-usuario.html',
   styleUrl: './form-usuario.css',
 })
+export class FormUsuario implements OnInit {
 
-
-export class FormUsuario {
-
-  // Recibe el usuario a editar (null si es nuevo)
   @Input() usuarioEditar: Usuario | null = null;
-
-  // Emite el formulario listo para guardar
   @Output() formularioGuardado = new EventEmitter<Usuario>();
-
-  // Emite cuando el usuario cancela
   @Output() cancelado = new EventEmitter<void>();
 
   formulario: Usuario = this.vacio();
   modoEdicion = false;
+  intentoEnvio = false;
 
   ngOnInit(): void {
     if (this.usuarioEditar) {
-      // Si viene un usuario, copia sus datos al formulario
       this.formulario = { ...this.usuarioEditar };
       this.modoEdicion = true;
     }
@@ -51,12 +42,15 @@ export class FormUsuario {
   }
 
   guardar(): void {
-    // Solo emite hacia el padre, no sabe nada de la lista
+    this.intentoEnvio = true;
+    if (!this.formulario.identificacion || !this.formulario.nombre ||
+        !this.formulario.apellido || !this.formulario.correo || !this.formulario.rol) {
+      return;
+    }
     this.formularioGuardado.emit({ ...this.formulario });
   }
 
   cancelar(): void {
     this.cancelado.emit();
   }
-
 }

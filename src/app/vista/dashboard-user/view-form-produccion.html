@@ -1,21 +1,33 @@
-<div class="form-container">
+<div class="form-container" *ngIf="!exito">
   <h1>Registro de Lugar de Producción</h1>
 
-  <form (ngSubmit)="registrarProduccion()">
+  <form #formProduccion="ngForm" (ngSubmit)="registrarProduccion()">
 
-    <label>Nombre del lugar</label>
-    <input type="text" name="nombre" [(ngModel)]="formData.nombre" required placeholder="Nombre del lugar de producción">
+    <label>Nombre del lugar <span class="obligatorio">*</span></label>
+    <input type="text" name="nombre" [(ngModel)]="formData.nombre" required
+      #nombreRef="ngModel"
+      [class.input-error]="nombreRef.invalid && (nombreRef.touched || intentoEnvio)"
+      placeholder="Nombre del lugar de producción">
+    <span class="mensaje-error" *ngIf="nombreRef.invalid && (nombreRef.touched || intentoEnvio)">
+      El nombre del lugar es obligatorio.
+    </span>
 
-    <label>Predio asociado</label>
-    <select name="predio" [(ngModel)]="formData.predioId" required>
+    <label>Predio asociado <span class="obligatorio">*</span></label>
+    <select name="predio" [(ngModel)]="formData.predioId" required
+      #predioRef="ngModel"
+      [class.input-error]="predioRef.invalid && (predioRef.touched || intentoEnvio)">
       <option value="">Seleccione un predio</option>
       <option *ngFor="let predio of predios" [value]="predio.nroRegistroICA">
         {{ predio.nombre }}
       </option>
     </select>
+    <span class="mensaje-error" *ngIf="predioRef.invalid && (predioRef.touched || intentoEnvio)">
+      Seleccione un predio asociado.
+    </span>
 
     <label>Extensión (hectáreas)</label>
-    <input type="number" name="extension" [(ngModel)]="formData.extension" placeholder="Extensión en hectáreas">
+    <input type="number" name="extension" [(ngModel)]="formData.extension"
+      placeholder="Extensión en hectáreas">
 
     <label>Tipo de producción</label>
     <select name="tipoProduccion" [(ngModel)]="formData.tipoProduccion">
@@ -25,7 +37,7 @@
       <option value="mixta">Mixta</option>
     </select>
 
-    <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+    <div *ngIf="error" class="mensaje-error-general">{{ error }}</div>
 
     <div class="form-botones">
       <button type="submit" class="btn-verde" [disabled]="cargando">

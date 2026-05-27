@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../../soa/modal-service';
 import { PredioService } from '../../../soa/predio.service';
 import { ExitoComponent } from '../../exito/exito';
+import { ToastService } from '../../../soa/toast.service';
 
 interface Predio {
   id: number;
@@ -30,7 +31,8 @@ export class GestionPredios implements OnInit {
 
   constructor(
     private modalService: ModalService,
-    private predioService: PredioService
+    private predioService: PredioService,
+    private toast: ToastService
   ) {}
 
   vista: 'lista' | 'formulario' | 'exito' = 'lista';
@@ -76,8 +78,8 @@ export class GestionPredios implements OnInit {
         }));
         this.cargando = false;
       },
-      error: (err: any) => {
-        this.error = 'Error al cargar predios';
+      error: () => {
+        this.toast.error('Error al cargar predios');
         this.cargando = false;
       }
     });
@@ -107,8 +109,11 @@ export class GestionPredios implements OnInit {
   aprobar(predio: Predio) {
     if (confirm('¿Está seguro de aprobar este predio?')) {
       this.predioService.aprobarPredio(predio.numeroICA).subscribe({
-        next: () => { predio.estado = 'Activo'; },
-        error: () => { this.error = 'Error al aprobar predio'; }
+        next: () => {
+          predio.estado = 'Activo';
+          this.toast.exito('Predio aprobado exitosamente.');
+        },
+        error: () => { this.toast.error('Error al aprobar predio'); }
       });
     }
   }
@@ -119,8 +124,11 @@ export class GestionPredios implements OnInit {
       placeholder: 'Escriba el motivo del rechazo...',
       alConfirmar: () => {
         this.predioService.rechazarPredio(p.numeroICA).subscribe({
-          next: () => { p.estado = 'Rechazado'; },
-          error: () => { this.error = 'Error al rechazar predio'; }
+          next: () => {
+            p.estado = 'Rechazado';
+            this.toast.exito('Predio rechazado correctamente.');
+          },
+          error: () => { this.toast.error('Error al rechazar predio'); }
         });
       }
     });
@@ -128,7 +136,7 @@ export class GestionPredios implements OnInit {
 
   confirmarRechazo() {
     if (!this.motivoRechazo.trim()) {
-      alert('Debe ingresar un motivo de rechazo.');
+      this.toast.error('Debe ingresar un motivo de rechazo.');
       return;
     }
     if (this.predioArechazar) {
@@ -140,8 +148,11 @@ export class GestionPredios implements OnInit {
   desactivar(predio: Predio) {
     if (confirm('¿Está seguro de desactivar este predio?')) {
       this.predioService.desactivarPredio(predio.numeroICA).subscribe({
-        next: () => { predio.estado = 'Inactivo'; },
-        error: () => { this.error = 'Error al desactivar predio'; }
+        next: () => {
+          predio.estado = 'Inactivo';
+          this.toast.exito('Predio desactivado correctamente.');
+        },
+        error: () => { this.toast.error('Error al desactivar predio'); }
       });
     }
   }
@@ -157,8 +168,12 @@ export class GestionPredios implements OnInit {
         departamento: this.formulario.departamento,
         municipio: this.formulario.municipio
       }).subscribe({
-        next: () => { this.cargarPredios(); this.vista = 'exito'; },
-        error: () => { this.error = 'Error al actualizar predio'; }
+        next: () => {
+          this.cargarPredios();
+          this.toast.exito('Predio actualizado exitosamente.');
+          this.vista = 'exito';
+        },
+        error: () => { this.toast.error('Error al actualizar predio'); }
       });
     } else {
       this.predioService.crearPredio({
@@ -171,8 +186,12 @@ export class GestionPredios implements OnInit {
         municipio: this.formulario.municipio,
         nroDocProductor: this.formulario.documentoPropietario
       }).subscribe({
-        next: () => { this.cargarPredios(); this.vista = 'exito'; },
-        error: () => { this.error = 'Error al crear predio'; }
+        next: () => {
+          this.cargarPredios();
+          this.toast.exito('Predio creado exitosamente.');
+          this.vista = 'exito';
+        },
+        error: () => { this.toast.error('Error al crear predio'); }
       });
     }
   }

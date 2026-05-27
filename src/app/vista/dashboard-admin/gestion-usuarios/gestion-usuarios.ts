@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormUsuario, Usuario } from '../form-usuario/form-usuario';
 import { UsuarioService } from '../../../soa/usuario.service';
 import { ExitoComponent } from '../../exito/exito';
+import { ToastService } from '../../../soa/toast.service';
 
 @Component({
   selector: 'app-gestion-usuarios',
@@ -19,7 +20,10 @@ export class GestionUsuariosComponent implements OnInit {
   cargando = false;
   error = '';
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -42,9 +46,8 @@ export class GestionUsuariosComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        this.error = 'Error al cargar usuarios';
+        this.toast.error('Error al cargar usuarios');
         this.cargando = false;
-        console.error(err);
       }
     });
   }
@@ -64,13 +67,19 @@ export class GestionUsuariosComponent implements OnInit {
     if (confirm(`¿Está seguro de ${accion} este usuario?`)) {
       if (u.estado === 'Activo') {
         this.usuarioService.desactivarUsuario(u.identificacion).subscribe({
-          next: () => { u.estado = 'Inactivo'; },
-          error: () => { this.error = 'Error al cambiar estado'; }
+          next: () => {
+            u.estado = 'Inactivo';
+            this.toast.exito('Usuario desactivado correctamente.');
+          },
+          error: () => { this.toast.error('Error al desactivar usuario'); }
         });
       } else {
         this.usuarioService.activarUsuario(u.identificacion).subscribe({
-          next: () => { u.estado = 'Activo'; },
-          error: () => { this.error = 'Error al cambiar estado'; }
+          next: () => {
+            u.estado = 'Activo';
+            this.toast.exito('Usuario activado correctamente.');
+          },
+          error: () => { this.toast.error('Error al activar usuario'); }
         });
       }
     }
@@ -86,10 +95,11 @@ export class GestionUsuariosComponent implements OnInit {
         rol: usuario.rol
       }).subscribe({
         next: () => {
+          this.toast.exito('Usuario actualizado exitosamente.');
           this.vista = 'exito';
           this.cargarUsuarios();
         },
-        error: () => { this.error = 'Error al actualizar usuario'; }
+        error: () => { this.toast.error('Error al actualizar usuario'); }
       });
     } else {
       this.usuarioService.crearUsuario({
@@ -103,10 +113,11 @@ export class GestionUsuariosComponent implements OnInit {
         rol: usuario.rol
       }).subscribe({
         next: () => {
+          this.toast.exito('Usuario creado exitosamente.');
           this.vista = 'exito';
           this.cargarUsuarios();
         },
-        error: () => { this.error = 'Error al crear usuario'; }
+        error: () => { this.toast.error('Error al crear usuario'); }
       });
     }
   }

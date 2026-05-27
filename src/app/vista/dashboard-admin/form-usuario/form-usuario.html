@@ -3,48 +3,72 @@
   <h2>{{ modoEdicion ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
 
   <div class="campo">
-    <label>Identificación</label>
-    <input type="text" [(ngModel)]="formulario.identificacion" 
-           placeholder="Número de documento" [disabled]="modoEdicion"/>
+    <label>Identificación <span class="obligatorio">*</span></label>
+    <input type="text" name="identificacion" [(ngModel)]="formulario.identificacion"
+           placeholder="Número de documento" [disabled]="modoEdicion"
+           #idRef="ngModel" required
+           [class.input-error]="idRef.invalid && (idRef.touched || intentoEnvio)"/>
+    <span class="mensaje-error" *ngIf="idRef.invalid && (idRef.touched || intentoEnvio)">
+      La identificación es obligatoria.
+    </span>
   </div>
 
   <div class="campo">
-    <label>Nombre</label>
-    <input type="text" [(ngModel)]="formulario.nombre"/>
+    <label>Nombre <span class="obligatorio">*</span></label>
+    <input type="text" name="nombre" [(ngModel)]="formulario.nombre" required
+           #nombreRef="ngModel"
+           [class.input-error]="nombreRef.invalid && (nombreRef.touched || intentoEnvio)"/>
+    <span class="mensaje-error" *ngIf="nombreRef.invalid && (nombreRef.touched || intentoEnvio)">
+      El nombre es obligatorio.
+    </span>
   </div>
 
   <div class="campo">
-    <label>Apellido</label>
-    <input type="text" [(ngModel)]="formulario.apellido"/>
+    <label>Apellido <span class="obligatorio">*</span></label>
+    <input type="text" name="apellido" [(ngModel)]="formulario.apellido" required
+           #apellidoRef="ngModel"
+           [class.input-error]="apellidoRef.invalid && (apellidoRef.touched || intentoEnvio)"/>
+    <span class="mensaje-error" *ngIf="apellidoRef.invalid && (apellidoRef.touched || intentoEnvio)">
+      El apellido es obligatorio.
+    </span>
   </div>
 
   <div class="campo">
     <label>Teléfono</label>
-    <input type="text" [(ngModel)]="formulario.telefono"/>
+    <input type="text" name="telefono" [(ngModel)]="formulario.telefono"/>
   </div>
 
   <div class="campo">
-    <label>Correo</label>
-    <input type="email" [(ngModel)]="formulario.correo"/>
+    <label>Correo <span class="obligatorio">*</span></label>
+    <input type="email" name="correo" [(ngModel)]="formulario.correo" required
+           #correoRef="ngModel"
+           [class.input-error]="correoRef.invalid && (correoRef.touched || intentoEnvio)"/>
+    <span class="mensaje-error" *ngIf="correoRef.invalid && (correoRef.touched || intentoEnvio)">
+      El correo es obligatorio.
+    </span>
   </div>
 
   <div class="campo">
-    <label>Rol</label>
-    <select [(ngModel)]="formulario.rol">
+    <label>Rol <span class="obligatorio">*</span></label>
+    <select name="rol" [(ngModel)]="formulario.rol" required
+            #rolRef="ngModel"
+            [class.input-error]="rolRef.invalid && (rolRef.touched || intentoEnvio)">
       <option value="">Seleccionar rol</option>
       <option value="PRODUCTOR">Productor</option>
       <option value="TECNICO">Técnico</option>
       <option value="FUNCIONARIO_ICA">Funcionario ICA</option>
     </select>
+    <span class="mensaje-error" *ngIf="rolRef.invalid && (rolRef.touched || intentoEnvio)">
+      Seleccione un rol.
+    </span>
   </div>
 
   <div class="campo" *ngIf="formulario.rol === 'TECNICO'">
     <label>Número de tarjeta profesional</label>
-    <input type="text" [(ngModel)]="formulario.nroTarjetaProfesional" 
+    <input type="text" name="nroTarjetaProfesional"
+           [(ngModel)]="formulario.nroTarjetaProfesional"
            placeholder="Número de tarjeta profesional"/>
   </div>
-
-  <div class="form-botones">
 
   <div class="form-botones">
     <button class="btn-guardar" (click)="guardar()">Guardar</button>

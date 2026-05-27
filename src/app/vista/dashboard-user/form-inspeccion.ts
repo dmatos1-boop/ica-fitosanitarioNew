@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ExitoComponent } from '../exito/exito';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ToastService } from '../../soa/toast.service';
 
 @Component({
   selector: 'app-form-inspeccion',
@@ -18,6 +19,7 @@ export class FormInspeccion implements OnInit {
   exito = false;
   error = '';
   cargando = false;
+  intentoEnvio = false;
 
   tipoInspeccion = '';
   lugarSeleccionado = '';
@@ -26,10 +28,11 @@ export class FormInspeccion implements OnInit {
   lugares: any[] = [];
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  private router: Router,
+  private http: HttpClient,
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private toast: ToastService
+) {}
 
   private getHeaders(): HttpHeaders {
     const token = isPlatformBrowser(this.platformId)
@@ -50,32 +53,36 @@ export class FormInspeccion implements OnInit {
   }
 
   guardarCita() {
-    if (!this.tipoInspeccion || !this.lugarSeleccionado) {
-      this.error = 'Por favor selecciona el tipo de inspección y el lugar.';
-      return;
-    }
-
-    this.cargando = true;
-    this.error = '';
-
-    const datos = {
-      tipoInspeccion: this.tipoInspeccion,
-      nroRegICAlugar: this.lugarSeleccionado,
-      comentarios: this.observaciones
-    };
-
-    this.http.post(`${this.apiUrl}/inspecciones`, datos, { headers: this.getHeaders() })
-      .subscribe({
-        next: () => {
-          this.cargando = false;
-          this.exito = true;
-        },
-        error: () => {
-          this.cargando = false;
-          this.error = 'Error al agendar la inspección. Intenta nuevamente.';
-        }
-      });
+    this.intentoEnvio = true;
+  if (!this.tipoInspeccion || !this.lugarSeleccionado) {
+    this.toast.error('Por favor selecciona el tipo de inspección y el lugar.');
+    this.error = 'Por favor selecciona el tipo de inspección y el lugar.';
+    return;
   }
+
+  this.cargando = true;
+  this.error = '';
+
+  const datos = {
+    tipoInspeccion: this.tipoInspeccion,
+    nroRegICAlugar: this.lugarSeleccionado,
+    comentarios: this.observaciones
+  };
+
+  this.http.post(`${this.apiUrl}/inspecciones`, datos, { headers: this.getHeaders() })
+    .subscribe({
+      next: () => {
+        this.cargando = false;
+        this.toast.exito('Cita de inspección agendada exitosamente.');
+        this.exito = true;
+      },
+      error: () => {
+        this.cargando = false;
+        this.toast.error('Error al agendar la inspección. Intenta nuevamente.');
+        this.error = 'Error al agendar la inspección. Intenta nuevamente.';
+      }
+    });
+}
 
   volverListado() {
     this.router.navigate(['/usuario/visita']);

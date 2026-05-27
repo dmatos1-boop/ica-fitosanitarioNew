@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExitoComponent } from '../exito/exito';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ToastService } from '../../soa/toast.service';
 
 @Component({
   selector: 'app-view-form',
@@ -18,6 +19,7 @@ export class ViewForm implements OnInit {
   exito = false;
   error = '';
   cargando = false;
+  intentoEnvio = false;
 
   departamentoSeleccionado = '';
   municipioSeleccionado = '';
@@ -76,10 +78,11 @@ export class ViewForm implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  private router: Router,
+  private http: HttpClient,
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private toast: ToastService
+) {}
 
   private getHeaders(): HttpHeaders {
     const token = isPlatformBrowser(this.platformId)
@@ -107,35 +110,39 @@ export class ViewForm implements OnInit {
   }
 
   guardarFormulario() {
-    if (!this.formData.nombre || !this.departamentoSeleccionado || !this.municipioSeleccionado) {
-      this.error = 'Por favor completa todos los campos obligatorios.';
-      return;
-    }
-
-    this.cargando = true;
-    this.error = '';
-
-    const datos = {
-      nombre: this.formData.nombre,
-      departamento: this.departamentoSeleccionado,
-      municipio: this.municipioSeleccionado,
-      extension: this.formData.extension,
-      direccion: this.formData.direccion,
-      nroDocProductor: this.getIdentificacion()
-    };
-
-    this.http.post(`${this.apiUrl}/predios`, datos, { headers: this.getHeaders() })
-      .subscribe({
-        next: () => {
-          this.cargando = false;
-          this.exito = true;
-        },
-        error: () => {
-          this.cargando = false;
-          this.error = 'Error al registrar el predio. Intenta nuevamente.';
-        }
-      });
+    this.intentoEnvio = true;
+  if (!this.formData.nombre || !this.departamentoSeleccionado || !this.municipioSeleccionado) {
+    this.toast.error('Por favor completa todos los campos obligatorios.');
+    this.error = 'Por favor completa todos los campos obligatorios.';
+    return;
   }
+
+  this.cargando = true;
+  this.error = '';
+
+  const datos = {
+    nombre: this.formData.nombre,
+    departamento: this.departamentoSeleccionado,
+    municipio: this.municipioSeleccionado,
+    extension: this.formData.extension,
+    direccion: this.formData.direccion,
+    nroDocProductor: this.getIdentificacion()
+  };
+
+  this.http.post(`${this.apiUrl}/predios`, datos, { headers: this.getHeaders() })
+    .subscribe({
+      next: () => {
+        this.cargando = false;
+        this.toast.exito('Predio registrado exitosamente.');
+        this.exito = true;
+      },
+      error: () => {
+        this.cargando = false;
+        this.toast.error('Error al registrar el predio. Intenta nuevamente.');
+        this.error = 'Error al registrar el predio. Intenta nuevamente.';
+      }
+    });
+}
 
   volverListado() {
     this.router.navigate(['/usuario/predio']);

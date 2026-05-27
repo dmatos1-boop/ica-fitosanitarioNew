@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { ExitoComponent } from '../exito/exito';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ToastService } from '../../soa/toast.service';
 
 @Component({
   selector: 'app-view-form-produccion',
@@ -18,6 +19,7 @@ export class ViewFormProduccion implements OnInit {
   exito = false;
   error = '';
   cargando = false;
+  intentoEnvio = false;
 
   predios: any[] = [];
 
@@ -29,10 +31,11 @@ export class ViewFormProduccion implements OnInit {
   };
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  private router: Router,
+  private http: HttpClient,
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private toast: ToastService
+) {}
 
   private getHeaders(): HttpHeaders {
     const token = isPlatformBrowser(this.platformId)
@@ -64,38 +67,42 @@ export class ViewFormProduccion implements OnInit {
   }
 
   registrarProduccion() {
-    if (!this.formData.nombre || !this.formData.predioId) {
-      this.error = 'Por favor completa todos los campos obligatorios.';
-      return;
-    }
-
-    this.cargando = true;
-    this.error = '';
-
-    const predio = this.predios.find(p => p.nroRegistroICA === this.formData.predioId);
-
-    const datos = {
-      nombre: this.formData.nombre,
-      nroPredial: this.formData.predioId,
-      extension: this.formData.extension,
-      tipoProduccion: this.formData.tipoProduccion,
-      departamento: predio?.departamento || '',
-      municipio: predio?.municipio || '',
-      nroDocProductor: this.getIdentificacion()
-    };
-
-    this.http.post(`${this.apiUrl}/lugares`, datos, { headers: this.getHeaders() })
-      .subscribe({
-        next: () => {
-          this.cargando = false;
-          this.exito = true;
-        },
-        error: () => {
-          this.cargando = false;
-          this.error = 'Error al registrar el lugar de producción.';
-        }
-      });
+    this.intentoEnvio = true;
+  if (!this.formData.nombre || !this.formData.predioId) {
+    this.toast.error('Por favor completa todos los campos obligatorios.');
+    this.error = 'Por favor completa todos los campos obligatorios.';
+    return;
   }
+
+  this.cargando = true;
+  this.error = '';
+
+  const predio = this.predios.find(p => p.nroRegistroICA === this.formData.predioId);
+
+  const datos = {
+    nombre: this.formData.nombre,
+    nroPredial: this.formData.predioId,
+    extension: this.formData.extension,
+    tipoProduccion: this.formData.tipoProduccion,
+    departamento: predio?.departamento || '',
+    municipio: predio?.municipio || '',
+    nroDocProductor: this.getIdentificacion()
+  };
+
+  this.http.post(`${this.apiUrl}/lugares`, datos, { headers: this.getHeaders() })
+    .subscribe({
+      next: () => {
+        this.cargando = false;
+        this.toast.exito('Lugar de producción registrado exitosamente.');
+        this.exito = true;
+      },
+      error: () => {
+        this.cargando = false;
+        this.toast.error('Error al registrar el lugar de producción.');
+        this.error = 'Error al registrar el lugar de producción.';
+      }
+    });
+}
 
   volverListado() {
     this.router.navigate(['/usuario/produccion']);

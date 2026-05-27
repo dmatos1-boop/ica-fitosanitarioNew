@@ -1,42 +1,73 @@
-<!-- ══════════ FORMULARIO CON VALIDACIÓN ══════════ -->
 <div *ngIf="vista === 'formulario'" class="modulo-container">
 
   <div class="modulo-header">
     <h2>Configuración de Umbral de Incidencia</h2>
   </div>
 
-  <!-- Mensaje de error si los rangos se solapan o tienen huecos -->
   <div *ngIf="errorRangos" class="alerta-error">⚠️ {{ errorRangos }}</div>
 
   <div class="formulario">
 
     <h3>Nivel Bajo</h3>
     <div class="rango-grupo">
-      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.bajo.min"/></div>
-      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.bajo.max"/></div>
+      <div class="campo">
+        <label>Mínimo</label>
+        <input type="number" name="bajoMin" [(ngModel)]="umbral.bajo.min"
+          [class.input-error]="umbral.bajo.min !== 0 && intentoEnvio"/>
+        <span class="mensaje-error" *ngIf="umbral.bajo.min !== 0 && intentoEnvio">
+          Debe comenzar en 0.
+        </span>
+      </div>
+      <div class="campo">
+        <label>Máximo</label>
+        <input type="number" name="bajoMax" [(ngModel)]="umbral.bajo.max"
+          [class.input-error]="umbral.bajo.max >= umbral.medio.min && intentoEnvio"/>
+      </div>
     </div>
 
     <h3>Nivel Medio</h3>
     <div class="rango-grupo">
-      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.medio.min"/></div>
-      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.medio.max"/></div>
+      <div class="campo">
+        <label>Mínimo</label>
+        <input type="number" name="medioMin" [(ngModel)]="umbral.medio.min"
+          [class.input-error]="umbral.bajo.max + 1 !== umbral.medio.min && intentoEnvio"/>
+        <span class="mensaje-error" *ngIf="umbral.bajo.max + 1 !== umbral.medio.min && intentoEnvio">
+          Debe ser {{ umbral.bajo.max + 1 }}.
+        </span>
+      </div>
+      <div class="campo">
+        <label>Máximo</label>
+        <input type="number" name="medioMax" [(ngModel)]="umbral.medio.max"
+          [class.input-error]="umbral.medio.max >= umbral.alto.min && intentoEnvio"/>
+      </div>
     </div>
 
     <h3>Nivel Alto</h3>
     <div class="rango-grupo">
-      <div class="campo"><label>Mínimo</label><input type="number" [(ngModel)]="umbral.alto.min"/></div>
-      <div class="campo"><label>Máximo</label><input type="number" [(ngModel)]="umbral.alto.max"/></div>
+      <div class="campo">
+        <label>Mínimo</label>
+        <input type="number" name="altoMin" [(ngModel)]="umbral.alto.min"
+          [class.input-error]="umbral.medio.max + 1 !== umbral.alto.min && intentoEnvio"/>
+        <span class="mensaje-error" *ngIf="umbral.medio.max + 1 !== umbral.alto.min && intentoEnvio">
+          Debe ser {{ umbral.medio.max + 1 }}.
+        </span>
+      </div>
+      <div class="campo">
+        <label>Máximo</label>
+        <input type="number" name="altoMax" [(ngModel)]="umbral.alto.max"/>
+      </div>
     </div>
 
     <div class="form-botones">
-      <button class="btn-guardar" (click)="guardar()">Guardar cambios</button>
+      <button class="btn-guardar" [disabled]="cargando" (click)="guardar()">
+        {{ cargando ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
     </div>
 
   </div>
 
 </div>
 
-<!-- ══════════ ÉXITO ══════════ -->
 <app-exito
   *ngIf="vista === 'exito'"
   mensaje="Los umbrales han sido actualizados correctamente."

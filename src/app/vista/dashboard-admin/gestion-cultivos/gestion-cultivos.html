@@ -1,20 +1,13 @@
-<!-- VISTA LISTA  -->
+<!-- VISTA LISTA -->
 <div *ngIf="vista === 'lista'" class="modulo-container">
-
   <div class="modulo-header">
     <h2>Gestión de Cultivos</h2>
     <button class="btn-nuevo" (click)="nuevo()">+ Nuevo Cultivo</button>
   </div>
-
   <table class="tabla">
     <thead>
       <tr>
-        <th>Id</th>
-        <th>Nombre</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-        <th>Estado</th>
-        <th>Acciones</th>
+        <th>Id</th><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Estado</th><th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -33,26 +26,39 @@
       </tr>
     </tbody>
   </table>
-
 </div>
 
-<!-- VISTA FORMULARIO  -->
+<!-- VISTA FORMULARIO -->
 <div *ngIf="vista === 'formulario'" class="modulo-container">
-
   <div class="modulo-header">
     <h2>{{ modoEdicion ? 'Editar Cultivo' : 'Nuevo Cultivo' }}</h2>
   </div>
-
   <div class="formulario">
 
-    <div class="campo"><label>Nombre del Cultivo</label>
-      <input type="text" [(ngModel)]="formulario.nombre"/></div>
+    <div class="campo">
+      <label>Nombre del Cultivo <span class="obligatorio">*</span></label>
+      <input type="text" name="nombre" [(ngModel)]="formulario.nombre" required
+        #nombreRef="ngModel"
+        [class.input-error]="nombreRef.invalid && (nombreRef.touched || intentoEnvio)"/>
+      <span class="mensaje-error" *ngIf="nombreRef.invalid && (nombreRef.touched || intentoEnvio)">
+        El nombre es obligatorio.
+      </span>
+    </div>
 
-    <div class="campo"><label>Tipo de Cultivo</label>
-      <input type="text" [(ngModel)]="formulario.tipo"/></div>
+    <div class="campo">
+      <label>Tipo de Cultivo <span class="obligatorio">*</span></label>
+      <input type="text" name="tipo" [(ngModel)]="formulario.tipo" required
+        #tipoRef="ngModel"
+        [class.input-error]="tipoRef.invalid && (tipoRef.touched || intentoEnvio)"/>
+      <span class="mensaje-error" *ngIf="tipoRef.invalid && (tipoRef.touched || intentoEnvio)">
+        El tipo es obligatorio.
+      </span>
+    </div>
 
-    <div class="campo"><label>Descripción</label>
-      <input type="text" [(ngModel)]="formulario.descripcion"/></div>
+    <div class="campo">
+      <label>Descripción</label>
+      <input type="text" name="descripcion" [(ngModel)]="formulario.descripcion"/>
+    </div>
 
     <div class="form-botones">
       <button class="btn-guardar" [disabled]="cargando" (click)="guardar()">
@@ -62,12 +68,6 @@
     </div>
 
   </div>
-
 </div>
 
-<!-- VISTA ÉXITO  -->
-<app-exito
-  *ngIf="vista === 'exito'"
-  mensaje="El cultivo ha sido guardado correctamente."
-  (volver)="volver()">
-</app-exito>
+<app-exito *ngIf="vista === 'exito'" mensaje="El cultivo ha sido guardado correctamente." (volver)="volver()"></app-exito>

@@ -1,20 +1,13 @@
-<!-- ══════════ LISTA ══════════ -->
+<!-- VISTA LISTA -->
 <div *ngIf="vista === 'lista'" class="modulo-container">
-
   <div class="modulo-header">
     <h2>Gestión de Plagas</h2>
     <button class="btn-nuevo" (click)="nuevo()">+ Nueva Plaga</button>
   </div>
-
   <table class="tabla">
     <thead>
       <tr>
-        <th>Id</th>
-        <th>Nombre</th>
-        <th>Cultivo Asociado</th>
-        <th>Umbral de Alerta</th>
-        <th>Estado</th>
-        <th>Acciones</th>
+        <th>Id</th><th>Nombre</th><th>Cultivo Asociado</th><th>Umbral de Alerta</th><th>Estado</th><th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -25,33 +18,37 @@
         <td>{{ p.umbralAlerta }}</td>
         <td><span [class]="'badge badge-' + p.estado.toLowerCase()">{{ p.estado }}</span></td>
         <td class="acciones">
-  <button class="btn-editar" (click)="editar(p)">Editar</button>
-  <button *ngIf="p.estado === 'Activo'" class="btn-rechazar" (click)="toggleEstado(p)">Desactivar</button>
-  <button *ngIf="p.estado === 'Inactivo'" class="btn-aprobar" (click)="toggleEstado(p)">Activar</button>
-  <button *ngIf="p.estado === 'Inactivo'" class="btn-rechazar" (click)="eliminar(p)">Eliminar</button>
-</td>
+          <button class="btn-editar" (click)="editar(p)">Editar</button>
+          <button *ngIf="p.estado === 'Activo'" class="btn-rechazar" (click)="toggleEstado(p)">Desactivar</button>
+          <button *ngIf="p.estado === 'Inactivo'" class="btn-aprobar" (click)="toggleEstado(p)">Activar</button>
+          <button *ngIf="p.estado === 'Inactivo'" class="btn-rechazar" (click)="eliminar(p)">Eliminar</button>
+        </td>
       </tr>
     </tbody>
   </table>
-
 </div>
 
-<!-- ══════════ FORMULARIO ══════════ -->
+<!-- VISTA FORMULARIO -->
 <div *ngIf="vista === 'formulario'" class="modulo-container">
-
   <div class="modulo-header">
     <h2>{{ modoEdicion ? 'Editar Plaga' : 'Nueva Plaga' }}</h2>
   </div>
-
   <div class="formulario">
 
-    <div class="campo"><label>Nombre de la Plaga</label>
-      <input type="text" placeholder="Ej: Mosca blanca" [(ngModel)]="formulario.nombre"/>
+    <div class="campo">
+      <label>Nombre de la Plaga <span class="obligatorio">*</span></label>
+      <input type="text" name="nombre" placeholder="Ej: Mosca blanca"
+        [(ngModel)]="formulario.nombre" required
+        #nombreRef="ngModel"
+        [class.input-error]="nombreRef.invalid && (nombreRef.touched || intentoEnvio)"/>
+      <span class="mensaje-error" *ngIf="nombreRef.invalid && (nombreRef.touched || intentoEnvio)">
+        El nombre es obligatorio.
+      </span>
     </div>
 
     <div class="campo">
       <label>Cultivo Asociado</label>
-      <select [(ngModel)]="formulario.cultivoAsociado" name="cultivo">
+      <select name="cultivo" [(ngModel)]="formulario.cultivoAsociado">
         <option value="">Seleccione un cultivo</option>
         <option *ngFor="let cultivo of CultivosAsociados" [value]="cultivo.nombreComun">
           {{ cultivo.nombreComun }}
@@ -59,8 +56,14 @@
       </select>
     </div>
 
-    <div class="campo"><label>Umbral de Alerta (%)</label>
-      <input type="number" [(ngModel)]="formulario.umbralAlerta"/>
+    <div class="campo">
+      <label>Umbral de Alerta (%) <span class="obligatorio">*</span></label>
+      <input type="number" name="umbralAlerta" [(ngModel)]="formulario.umbralAlerta" required
+        #umbralRef="ngModel"
+        [class.input-error]="umbralRef.invalid && (umbralRef.touched || intentoEnvio)"/>
+      <span class="mensaje-error" *ngIf="umbralRef.invalid && (umbralRef.touched || intentoEnvio)">
+        El umbral de alerta es obligatorio.
+      </span>
     </div>
 
     <div class="form-botones">
@@ -71,12 +74,6 @@
     </div>
 
   </div>
-
 </div>
 
-<!-- ══════════ ÉXITO ══════════ -->
-<app-exito
-  *ngIf="vista === 'exito'"
-  mensaje="La plaga ha sido guardada correctamente."
-  (volver)="volver()">
-</app-exito>
+<app-exito *ngIf="vista === 'exito'" mensaje="La plaga ha sido guardada correctamente." (volver)="volver()"></app-exito>

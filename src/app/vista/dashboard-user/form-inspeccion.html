@@ -4,25 +4,36 @@
 
     <form #formCita="ngForm" (ngSubmit)="guardarCita()">
 
-      <label>Tipo de inspección</label>
-      <select name="tipoInspeccion" [(ngModel)]="tipoInspeccion" required>
+      <label>Tipo de inspección <span class="obligatorio">*</span></label>
+      <select name="tipoInspeccion" [(ngModel)]="tipoInspeccion" required
+        #tipoRef="ngModel"
+        [class.input-error]="tipoRef.invalid && (tipoRef.touched || intentoEnvio)">
         <option value="">Seleccione una opción</option>
         <option value="FITOSANITARIA">Inspección fitosanitaria</option>
         <option value="TECNICA">Inspección técnica</option>
       </select>
+      <span class="mensaje-error" *ngIf="tipoRef.invalid && (tipoRef.touched || intentoEnvio)">
+        Seleccione el tipo de inspección.
+      </span>
 
-      <label>Lugar de producción</label>
-      <select name="lugar" [(ngModel)]="lugarSeleccionado" required>
+      <label>Lugar de producción <span class="obligatorio">*</span></label>
+      <select name="lugar" [(ngModel)]="lugarSeleccionado" required
+        #lugarRef="ngModel"
+        [class.input-error]="lugarRef.invalid && (lugarRef.touched || intentoEnvio)">
         <option value="">Seleccione un lugar</option>
         <option *ngFor="let l of lugares" [value]="l.nroRegistroICA">
           {{ l.nombre }}
         </option>
       </select>
+      <span class="mensaje-error" *ngIf="lugarRef.invalid && (lugarRef.touched || intentoEnvio)">
+        Seleccione un lugar de producción.
+      </span>
 
-      <label>Observaciones (opcional)</label>
-      <textarea name="observaciones" [(ngModel)]="observaciones" placeholder="Observaciones adicionales..."></textarea>
+      <label>Observaciones <span class="opcional">(opcional)</span></label>
+      <textarea name="observaciones" [(ngModel)]="observaciones"
+        placeholder="Observaciones adicionales..."></textarea>
 
-      <div *ngIf="error" class="mensaje-error">{{ error }}</div>
+      <div *ngIf="error" class="mensaje-error-general">{{ error }}</div>
 
       <div class="form-botones">
         <button type="submit" class="btn-verde" [disabled]="cargando">

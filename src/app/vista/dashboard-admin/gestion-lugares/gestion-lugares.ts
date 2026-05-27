@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../../soa/modal-service';
 import { LugarService } from '../../../soa/lugar.service';
 import { ExitoComponent } from '../../exito/exito';
+import { ToastService } from '../../../soa/toast.service';
 
 export interface LugarProduccion {
   id: string;
@@ -25,7 +26,8 @@ export class GestionLugares implements OnInit {
 
   constructor(
     private modalService: ModalService,
-    private lugarService: LugarService
+    private lugarService: LugarService,
+    private toast: ToastService
   ) {}
 
   lugares: LugarProduccion[] = [];
@@ -59,8 +61,8 @@ export class GestionLugares implements OnInit {
         }));
         this.cargando = false;
       },
-      error: (err: any) => {
-        this.error = 'Error al cargar lugares de producción';
+      error: () => {
+        this.toast.error('Error al cargar lugares de producción');
         this.cargando = false;
       }
     });
@@ -89,8 +91,11 @@ export class GestionLugares implements OnInit {
   aprobar(l: LugarProduccion): void {
     if (confirm('¿Está seguro de aprobar este lugar de producción?')) {
       this.lugarService.aprobarLugar(l.numeroICA).subscribe({
-        next: () => { l.estado = 'Activo'; },
-        error: (err: any) => { this.error = 'Error al aprobar lugar'; }
+        next: () => {
+          l.estado = 'Activo';
+          this.toast.exito('Lugar de producción aprobado exitosamente.');
+        },
+        error: () => { this.toast.error('Error al aprobar lugar'); }
       });
     }
   }
@@ -101,8 +106,11 @@ export class GestionLugares implements OnInit {
       placeholder: 'Escriba el motivo del rechazo...',
       alConfirmar: (motivo: string) => {
         this.lugarService.rechazarLugar(l.numeroICA).subscribe({
-          next: () => { l.estado = 'Inactivo'; },
-          error: (err: any) => { this.error = 'Error al rechazar lugar'; }
+          next: () => {
+            l.estado = 'Inactivo';
+            this.toast.exito('Lugar de producción rechazado correctamente.');
+          },
+          error: () => { this.toast.error('Error al rechazar lugar'); }
         });
       }
     });
@@ -111,8 +119,11 @@ export class GestionLugares implements OnInit {
   desactivar(l: LugarProduccion): void {
     if (confirm('¿Está seguro de desactivar este lugar de producción?')) {
       this.lugarService.desactivarLugar(l.numeroICA).subscribe({
-        next: () => { l.estado = 'Inactivo'; },
-        error: (err: any) => { this.error = 'Error al desactivar lugar'; }
+        next: () => {
+          l.estado = 'Inactivo';
+          this.toast.exito('Lugar de producción desactivado correctamente.');
+        },
+        error: () => { this.toast.error('Error al desactivar lugar'); }
       });
     }
   }
@@ -131,9 +142,10 @@ export class GestionLugares implements OnInit {
       }).subscribe({
         next: () => {
           this.cargarLugares();
+          this.toast.exito('Lugar de producción actualizado exitosamente.');
           this.vista = 'exito';
         },
-        error: (err: any) => { this.error = 'Error al actualizar lugar'; }
+        error: () => { this.toast.error('Error al actualizar lugar'); }
       });
     } else {
       this.lugarService.crearLugar({
@@ -149,9 +161,10 @@ export class GestionLugares implements OnInit {
       }).subscribe({
         next: () => {
           this.cargarLugares();
+          this.toast.exito('Lugar de producción creado exitosamente.');
           this.vista = 'exito';
         },
-        error: (err: any) => { this.error = 'Error al crear lugar'; }
+        error: () => { this.toast.error('Error al crear lugar'); }
       });
     }
   }
@@ -161,6 +174,7 @@ export class GestionLugares implements OnInit {
   }
 
   alCancelar(): void { this.vista = 'lista'; }
+
   volver(): void {
     this.vista = 'lista';
     this.cargarLugares();

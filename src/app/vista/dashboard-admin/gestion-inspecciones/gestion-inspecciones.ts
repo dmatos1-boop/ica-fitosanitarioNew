@@ -6,6 +6,7 @@ import { ExitoComponent } from '../../exito/exito';
 import { InspeccionService } from '../../../soa/inspeccion.service';
 import { UsuarioService } from '../../../soa/usuario.service';
 import { LugarService } from '../../../soa/lugar.service';
+import { ToastService } from '../../../soa/toast.service';
 
 interface Inspeccion {
   id: number;
@@ -44,49 +45,50 @@ export class GestionInspecciones implements OnInit {
     private modalService: ModalService,
     private inspeccionService: InspeccionService,
     private usuarioService: UsuarioService,
-    private lugarService: LugarService
+    private lugarService: LugarService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
-  this.cargarInspecciones();
-  this.cargarTecnicos();
-  this.cargarLugares();
-}
+    this.cargarInspecciones();
+    this.cargarTecnicos();
+    this.cargarLugares();
+  }
 
   cargarTecnicos(): void {
     this.usuarioService.listarUsuarios().subscribe({
       next: (data: any[]) => {
         this.tecnicosActivos = data.filter(u => u.rol === 'TECNICO' && u.estado === 'ACTIVO');
       },
-      error: () => { this.error = 'Error al cargar técnicos'; }
+      error: () => { this.toast.error('Error al cargar técnicos'); }
     });
   }
 
   cargarLugares(): void {
     this.lugarService.listarLugares().subscribe({
       next: (data: any[]) => { this.lugaresActivos = data; },
-      error: () => { this.error = 'Error al cargar lugares'; }
+      error: () => { this.toast.error('Error al cargar lugares'); }
     });
   }
 
   cargarInspecciones(): void {
-  this.inspeccionService.listarInspecciones().subscribe({
-    next: (data: any[]) => {
-      this.inspecciones = data.map((i: any) => ({
-        id: i.idOrden,
-        codigo: `INS-${String(i.idOrden).padStart(3, '0')}`,
-        lugarProduccion: i.lugarProduccion || i.nroRegICAlugar,
-        tipo: i.tipoInspeccion,
-        fechaProgramada: i.fechaProgramada ? i.fechaProgramada.split('T')[0] : i.fechaSolicitud ? i.fechaSolicitud.split('T')[0] : '—',
-        tecnicoAsignado: i.documentoTecnico || '',
-        estado: i.estado === 'PROGRAMADA' ? 'Programada' :
-                i.estado === 'SOLICITADA' ? 'Solicitada' :
-                i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Realizada'
-      }));
-    },
-    error: () => { this.error = 'Error al cargar inspecciones'; }
-  });
-}
+    this.inspeccionService.listarInspecciones().subscribe({
+      next: (data: any[]) => {
+        this.inspecciones = data.map((i: any) => ({
+          id: i.idOrden,
+          codigo: `INS-${String(i.idOrden).padStart(3, '0')}`,
+          lugarProduccion: i.lugarProduccion || i.nroRegICAlugar,
+          tipo: i.tipoInspeccion,
+          fechaProgramada: i.fechaProgramada ? i.fechaProgramada.split('T')[0] : i.fechaSolicitud ? i.fechaSolicitud.split('T')[0] : '—',
+          tecnicoAsignado: i.documentoTecnico || '',
+          estado: i.estado === 'PROGRAMADA' ? 'Programada' :
+                  i.estado === 'SOLICITADA' ? 'Solicitada' :
+                  i.estado === 'CANCELADA'  ? 'Cancelada'  : 'Realizada'
+        }));
+      },
+      error: () => { this.toast.error('Error al cargar inspecciones'); }
+    });
+  }
 
   nuevaInspeccion(): void {
     this.formulario = {};
@@ -116,8 +118,11 @@ export class GestionInspecciones implements OnInit {
       placeholder: 'Escriba el motivo de la cancelación...',
       alConfirmar: (motivo: string) => {
         this.inspeccionService.cancelarInspeccion(ins.id, motivo).subscribe({
-          next: () => { ins.estado = 'Cancelada'; },
-          error: () => { this.error = 'Error al cancelar inspección'; }
+          next: () => {
+            ins.estado = 'Cancelada';
+            this.toast.exito('Inspección cancelada correctamente.');
+          },
+          error: () => { this.toast.error('Error al cancelar inspección'); }
         });
       }
     });
@@ -128,32 +133,40 @@ export class GestionInspecciones implements OnInit {
     this.cargando = true;
 
     if (this.modoFormulario === 'asignar' && this.inspeccionSeleccionada) {
-  if (!this.tecnicoSeleccionado) {
-    alert('Debe seleccionar un técnico.');
-    this.cargando = false;
-    return;
-  }
-  this.inspeccionService.asignarTecnico(this.inspeccionSeleccionada.id, this.tecnicoSeleccionado).subscribe({
-    next: () => {
-      this.cargando = false;
-      this.vista = 'exito';
-    },
-    error: () => { this.cargando = false; this.error = 'Error al asignar técnico'; }
-  });
+      if (!this.tecnicoSeleccionado) {
+        this.toast.error('Debe seleccionar un técnico.');
+        this.cargando = false;
+        return;
+      }
+      this.inspeccionService.asignarTecnico(this.inspeccionSeleccionada.id, this.tecnicoSeleccionado).subscribe({
+        next: () => {
+          this.cargando = false;
+          this.toast.exito('Técnico asignado exitosamente.');
+          this.vista = 'exito';
+        },
+        error: () => {
+          this.cargando = false;
+          this.toast.error('Error al asignar técnico');
+        }
+      });
 
     } else if (this.modoFormulario === 'reasignar' && this.inspeccionSeleccionada) {
-  if (!this.tecnicoSeleccionado) {
-    alert('Debe seleccionar un técnico.');
-    this.cargando = false;
-    return;
-  }
-  this.inspeccionService.asignarTecnico(this.inspeccionSeleccionada.id, this.tecnicoSeleccionado).subscribe({
-    next: () => {
-      this.cargando = false;
-      this.vista = 'exito';
-    },
-    error: () => { this.cargando = false; this.error = 'Error al reasignar técnico'; }
-  });
+      if (!this.tecnicoSeleccionado) {
+        this.toast.error('Debe seleccionar un técnico.');
+        this.cargando = false;
+        return;
+      }
+      this.inspeccionService.asignarTecnico(this.inspeccionSeleccionada.id, this.tecnicoSeleccionado).subscribe({
+        next: () => {
+          this.cargando = false;
+          this.toast.exito('Técnico reasignado exitosamente.');
+          this.vista = 'exito';
+        },
+        error: () => {
+          this.cargando = false;
+          this.toast.error('Error al reasignar técnico');
+        }
+      });
 
     } else if (this.modoFormulario === 'nueva') {
       this.inspeccionService.programarInspeccion({
@@ -166,9 +179,13 @@ export class GestionInspecciones implements OnInit {
         next: () => {
           this.cargarInspecciones();
           this.cargando = false;
+          this.toast.exito('Inspección programada exitosamente.');
           this.vista = 'exito';
         },
-        error: () => { this.cargando = false; this.error = 'Error al programar inspección'; }
+        error: () => {
+          this.cargando = false;
+          this.toast.error('Error al programar inspección');
+        }
       });
     }
   }

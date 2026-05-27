@@ -1,26 +1,25 @@
 <div class="login-container">
-
-  <!-- Card del Login (a la derecha) -->
   <div class="login-card">
-
-    <!-- Título principal -->
 
     <h2 class="titulo">Iniciar Sesión</h2>
     <p class="subtitulo">Bienvenido, ingresa tus datos</p>
-    
 
-  <form class="log"  (ngSubmit)="login()" #loginForm="ngForm"> <!--mejor funcionalidad para el usuario, ya que solo con enter entra o click-->
-    
+    <form class="log" (ngSubmit)="login()" #loginForm="ngForm">
+
       <div class="campo-grupo">
         <label for="usuario">Correo electrónico</label>
         <input
           id="usuario"
           name="usuario"
-          type="email , submit"
+          type="email"
           placeholder="Ingresar correo"
           [(ngModel)]="usuario"
           required
-        >
+          #usuarioRef="ngModel"
+          [class.input-error]="usuarioRef.invalid && (usuarioRef.touched || intentoEnvio)">
+        <span class="mensaje-error" *ngIf="usuarioRef.invalid && (usuarioRef.touched || intentoEnvio)">
+          El correo es obligatorio.
+        </span>
       </div>
 
       <div class="campo-grupo">
@@ -31,16 +30,24 @@
           type="password"
           placeholder="Ingresar contraseña"
           [(ngModel)]="password"
-        >
+          required
+          #passwordRef="ngModel"
+          [class.input-error]="passwordRef.invalid && (passwordRef.touched || intentoEnvio)">
+        <span class="mensaje-error" *ngIf="passwordRef.invalid && (passwordRef.touched || intentoEnvio)">
+          La contraseña es obligatoria.
+        </span>
+      </div>
+
+      <div class="mensaje-error-general" *ngIf="error">
+        {{ error }}
       </div>
 
       <a href="#" class="olvido-password">¿Olvidaste tu contraseña?</a>
 
-    <button type="submit" class="btn-ingreso  ">
-      Ingresar
-    </button>
+      <button type="submit" class="btn-ingreso" [disabled]="cargando">
+        {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+      </button>
 
-  </form>
+    </form>
   </div>
-
 </div>
