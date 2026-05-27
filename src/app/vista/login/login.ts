@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthController } from '../../controlador/auth-control';
@@ -25,7 +25,8 @@ export class LoginComponent {
     private http: HttpClient,
     private router: Router,
     private authController: AuthController,
-    private toast: ToastService
+    private toast: ToastService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   login() {
@@ -39,6 +40,7 @@ export class LoginComponent {
 
     this.cargando = true;
     this.error = '';
+    this.cdr.detectChanges();
 
     this.http.post<any>('http://localhost:3000/auth/login', {
       email: this.usuario,
@@ -46,7 +48,14 @@ export class LoginComponent {
     }).subscribe({
       next: (respuesta) => {
         this.cargando = false;
+        this.cdr.detectChanges();
         const datos = respuesta.datos ?? respuesta;
+        if (!datos.token) {
+          this.toast.error('Usuario o contraseña incorrectos.');
+          this.error = 'Usuario o contraseña incorrectos';
+          this.cdr.detectChanges();
+          return;
+        }
         this.authController.guardarSesion(datos.token, datos.rol, datos.nombre);
         this.toast.exito(`Bienvenido, ${datos.nombre}`);
         const rol = (datos.rol as string).toLowerCase();
@@ -60,10 +69,18 @@ export class LoginComponent {
           this.error = 'Rol no reconocido: ' + datos.rol;
         }
       },
-      error: () => {
+      error: (err) => {
+        console.log('ERROR CAPTURADO:', err.status);
         this.cargando = false;
-        this.toast.error('Usuario o contraseña incorrectos.');
-        this.error = 'Usuario o contraseña incorrectos';
+        this.intentoEnvio = true;
+        if (err.status === 401 || err.status === 400) {
+          this.toast.error('Usuario o contraseña incorrectos.');
+          this.error = 'Usuario o contraseña incorrectos';
+        } else {
+          this.toast.error('Error al conectar con el servidor.');
+          this.error = 'Error al conectar con el servidor';
+        }
+        this.cdr.detectChanges();
       }
     });
   }
