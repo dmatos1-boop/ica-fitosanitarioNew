@@ -39,55 +39,48 @@ export class ServicioInspeccionImpl implements IServicioInspeccion {
 }
 
   async registrarResultadoFitosanitario(idOrden: number, datos: any): Promise<any> {
-    const incidencia = (datos.plantasAfectadas / datos.cantidadPlantas) * 100;
-    let nivelAlerta = 'BAJO';
-    if (incidencia > 30) nivelAlerta = 'ALTO';
-    else if (incidencia > 10) nivelAlerta = 'MEDIO';
-
-    const sql = `INSERT INTO INSPECCION_FITOSANITARIA 
-                 (idOrden, fecha, estadoFenologico, porcentajeInfestacion, nivelAlerta, 
-                  areaInspeccionada, cantidadPlantas, cantidadProyectada, cantidadReal, comentarios) 
-                 VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const valores = [idOrden, datos.estadoFenologico, incidencia, nivelAlerta,
-                     datos.areaInspeccionada, datos.cantidadPlantas, datos.cantidadProyectada,
-                     datos.cantidadReal, datos.comentarios];
-    return new Promise((resolve, reject) => {
-      conexionInspecciones.query(sql, valores, (error, resultado: any) => {
-        if (error) reject(error);
-        else {
-          conexionInspecciones.query(`UPDATE ORDEN_INSPECCION SET estado='REALIZADA' WHERE idOrden=?`,
-            [idOrden], (err) => {
-              if (err) reject(err);
-              else resolve({ idInspeccion: resultado.insertId, nivelAlerta, porcentajeInfestacion: incidencia });
-            });
-        }
-      });
+  const sql = `CALL registrarInspeccionFitosanitaria(?, ?, ?, ?, ?, ?, ?, ?)`;
+  const valores = [
+    idOrden,
+    datos.estadoFenologico,
+    datos.cantidadPlantas,
+    datos.plantasAfectadas,
+    datos.areaInspeccionada,
+    datos.cantidadProyectada,
+    datos.cantidadReal,
+    datos.comentarios || ''
+  ];
+  return new Promise((resolve, reject) => {
+    conexionInspecciones.query(sql, valores, (error, resultado: any) => {
+      if (error) reject(error);
+      else resolve({ mensaje: 'Inspección fitosanitaria registrada exitosamente' });
     });
-  }
+  });
+}
 
-  async registrarResultadoTecnico(idOrden: number, datos: any): Promise<any> {
-    const sql = `INSERT INTO INSPECCION_TECNICA 
-                 (idOrden, areaAcopio, areaResiduosVegetales, areaAlmacenamientoInsumos,
-                  areaDosificacion, areaResiduosMezclas, areaHerramientas, areaSanitaria, comentarios) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const valores = [idOrden, datos.areaAcopio, datos.areaResiduosVegetales,
-                     datos.areaAlmacenamientoInsumos, datos.areaDosificacion,
-                     datos.areaResiduosMezclas, datos.areaHerramientas,
-                     datos.areaSanitaria, datos.comentarios];
-    return new Promise((resolve, reject) => {
-      conexionInspecciones.query(sql, valores, (error, resultado: any) => {
-        if (error) reject(error);
-        else {
-          conexionInspecciones.query(`UPDATE ORDEN_INSPECCION SET estado='REALIZADA' WHERE idOrden=?`,
-            [idOrden], (err) => {
-              if (err) reject(err);
-              else resolve({ idInspeccionTec: resultado.insertId });
-            });
-        }
-      });
+ async registrarResultadoTecnico(idOrden: number, datos: any): Promise<any> {
+  const sql = `INSERT INTO INSPECCION_TECNICA 
+               (idOrden, areaAcopio, areaResiduosVegetales, areaAlmacenamientoInsumos,
+                areaDosificacion, areaResiduosMezclas, areaHerramientas, areaSanitaria, comentarios) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const valores = [
+    idOrden,
+    datos.areaAcopio,
+    datos.areaResiduosVegetales,
+    datos.areaAlmacenamientoInsumos,
+    datos.areaDosificacion,
+    datos.areaResiduosMezclas,
+    datos.areaHerramientas,
+    datos.areaSanitaria,
+    datos.comentarios || ''
+  ];
+  return new Promise((resolve, reject) => {
+    conexionInspecciones.query(sql, valores, (error, resultado: any) => {
+      if (error) reject(error);
+      else resolve({ mensaje: 'Inspección técnica registrada exitosamente' });
     });
-  }
-
+  });
+}
   async consultarInspecciones(filtros: any): Promise<any[]> {
     let sql = `SELECT * FROM ORDEN_INSPECCION WHERE 1=1`;
     const valores: any[] = [];
