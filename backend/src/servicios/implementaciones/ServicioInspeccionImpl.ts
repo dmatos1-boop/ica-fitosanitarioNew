@@ -59,10 +59,7 @@ export class ServicioInspeccionImpl implements IServicioInspeccion {
 }
 
  async registrarResultadoTecnico(idOrden: number, datos: any): Promise<any> {
-  const sql = `INSERT INTO INSPECCION_TECNICA 
-               (idOrden, areaAcopio, areaResiduosVegetales, areaAlmacenamientoInsumos,
-                areaDosificacion, areaResiduosMezclas, areaHerramientas, areaSanitaria, comentarios) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `CALL registrarInspeccionTecnica(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const valores = [
     idOrden,
     datos.areaAcopio,
@@ -81,6 +78,7 @@ export class ServicioInspeccionImpl implements IServicioInspeccion {
     });
   });
 }
+
   async consultarInspecciones(filtros: any): Promise<any[]> {
     let sql = `SELECT * FROM ORDEN_INSPECCION WHERE 1=1`;
     const valores: any[] = [];
